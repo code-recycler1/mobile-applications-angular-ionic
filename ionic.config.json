@@ -1,0 +1,7 @@
+{
+  "name": "mobile-lecture2-example-start",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
