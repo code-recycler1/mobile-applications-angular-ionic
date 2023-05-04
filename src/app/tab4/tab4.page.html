@@ -29,26 +29,21 @@
 
     <ion-item>
       <ion-icon name="sunny-outline"></ion-icon>
-      <ion-toggle></ion-toggle>
+      <ion-toggle (ionChange)="settingService.setTheme()"></ion-toggle>
       <ion-icon name="moon-outline"></ion-icon>
     </ion-item>
 
-    <ion-item>
+<!--    <ion-item>
       <ion-icon name="notifications-off-outline"></ion-icon>
       <ion-toggle></ion-toggle>
       <ion-icon name="notifications-outline"></ion-icon>
-    </ion-item>
-
-    <ion-item>
-      <ion-icon name="log-out-outline" slot="start"></ion-icon>
-      <ion-label>Log out</ion-label>
-      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
-    </ion-item>
+    </ion-item>-->
 
   </ion-list>
 
 </ion-content>
 
 <ion-footer class="ion-text-center">
+  <ion-button>Log out</ion-button>
   <ion-button color="danger">Delete account</ion-button>
 </ion-footer>
