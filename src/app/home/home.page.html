@@ -1,0 +1,62 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title class="ion-text-center">
+      Sportify
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="presentActionSheet()">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list lines="none" [inset]="true">
+    <ion-list-header>
+      <ion-label>Events</ion-label>
+      <ion-select aria-label="events" interface="action-sheet">
+        <ion-select-option value="apples">Upcoming</ion-select-option>
+        <ion-select-option value="oranges">Finished</ion-select-option>
+      </ion-select>
+    </ion-list-header>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Holy Guacamole - Snack Attackers</ion-card-title>
+        <ion-card-subtitle>15/04/2023 at 15:00</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        1
+        |
+        <ion-icon name="help-circle-outline"></ion-icon>
+        13
+        |
+        <ion-icon name="close-circle-outline"></ion-icon>
+        2
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Not Fast, Just Furious - Holy Guacamole</ion-card-title>
+        <ion-card-subtitle>22/04/2023 at 13:30</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        4
+        |
+        <ion-icon name="help-circle-outline"></ion-icon>
+        10
+        |
+        <ion-icon name="close-circle-outline"></ion-icon>
+        2
+      </ion-card-content>
+    </ion-card>
+
+  </ion-list>
+
+</ion-content>

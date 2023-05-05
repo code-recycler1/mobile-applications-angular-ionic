@@ -54,7 +54,7 @@ export class AuthService {
     if (this.currentUser.value) {
       await this.router.navigate(['/']);
     } else {
-      await this.router.navigate(['/me']);
+      await this.router.navigate(['/login']);
     }
   }
   async signOut(): Promise<void> {

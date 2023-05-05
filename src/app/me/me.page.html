@@ -1,4 +1,4 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
     <ion-title class="ion-text-center">
       Me
@@ -9,7 +9,7 @@
 <ion-content>
 
   <ion-list lines="full">
-    <ion-item>
+    <ion-item (click)="presentEditProfileAlert()">
       <ion-icon name="person-circle" slot="start"></ion-icon>
       <ion-label>Dennis Nijs - 23/09/1991</ion-label>
       <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
@@ -29,21 +29,27 @@
 
     <ion-item>
       <ion-icon name="sunny-outline"></ion-icon>
-      <ion-toggle (ionChange)="settingService.setTheme()"></ion-toggle>
+      <ion-toggle></ion-toggle>
       <ion-icon name="moon-outline"></ion-icon>
     </ion-item>
 
-<!--    <ion-item>
+    <ion-item>
       <ion-icon name="notifications-off-outline"></ion-icon>
       <ion-toggle></ion-toggle>
       <ion-icon name="notifications-outline"></ion-icon>
-    </ion-item>-->
+    </ion-item>
+
+    <!--    <ion-item>
+          <ion-icon name="calendar-clear-outline"></ion-icon>
+          <ion-toggle></ion-toggle>
+          <ion-icon name="calendar-outline"></ion-icon>
+        </ion-item>-->
 
   </ion-list>
 
 </ion-content>
 
 <ion-footer class="ion-text-center">
-  <ion-button>Log out</ion-button>
+  <ion-button>Sign out</ion-button>
   <ion-button color="danger">Delete account</ion-button>
 </ion-footer>
