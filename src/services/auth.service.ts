@@ -21,7 +21,9 @@ export class AuthService {
   isLoggedIn(): boolean {
     return this.currentUser.value !== null;
   }
-
+  getDisplayName(): string | undefined {
+    return this.currentUser.value?.displayName ?? undefined;
+  }
   async sendPhoneVerificationCode(phoneNumber: string): Promise<void> {
     const listener = FirebaseAuthentication.addListener('phoneCodeSent', ({verificationId}) => {
       this.#verificationId = verificationId;

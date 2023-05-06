@@ -1,5 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {ActionSheetController} from '@ionic/angular';
+import {GroupService} from '../../../services/group.service';
+import {ActivatedRoute} from '@angular/router';
+import {Group} from '../../../datatypes/group';
+import {UserService} from '../../../services/user.service';
 
 @Component({
   selector: 'app-detail',
@@ -8,32 +11,33 @@ import {ActionSheetController} from '@ionic/angular';
 })
 export class DetailPage implements OnInit {
 
-  constructor(private actionSheetCtrl: ActionSheetController) {
+  group!: Group;
+  isGroupOwner!: boolean;
+
+  constructor(public groupService: GroupService,
+              public userService: UserService,
+              public activatedRoute: ActivatedRoute) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
+    this.setData();
   }
 
-  async presentEditMemberAlert(): Promise<void> {
-    const alert = await this.actionSheetCtrl.create({
-      header: 'Jackie Robinson',
-      buttons: [{
-        text: '',
-        cssClass: 'copy-button'
-      }, {
-        text: 'Give ownership'
-      }, {
-        text: 'Remove'
-      }, {
-        text: 'Cancel',
-        role: 'cancel',
-        cssClass: 'secondary'
-      }]
-    });
+  setData(): void {
+    const id = this.activatedRoute.snapshot.paramMap.get('id');
 
-    await alert.present();
+    if (id === null) {
+      return;
+    }
+    const group = this.groupService.getGroup(Number(id));
 
-    const copyButtonEl = document.querySelector('.copy-button');
-    copyButtonEl!.innerHTML = 'Copy phone number <ion-icon name="copy-outline"></ion-icon>';
+    if (group) {
+      this.group = group;
+    }
+
+    if (group?.ownerId == this.userService.getUserById(1)?._id){
+      this.isGroupOwner = true;
+    }
   }
+
 }

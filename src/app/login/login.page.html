@@ -1,9 +1,25 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>login</ion-title>
+    <ion-title>Login</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-align-items-stretch">
+
+  <ion-grid>
+    <ion-row>
+      <ion-col offsetXs="0" offsetSm="3" offsetMd="4" sizeXs="12" sizeSm="6" sizeMd="4">
+
+        <ion-item *ngIf="isNative" class="ion-margin-vertical" color="light" (click)="showPhoneVerification()">
+          <div slot="start">
+            <ion-icon size="large" name="chatbox-ellipses"></ion-icon>
+          </div>
+          <ion-label>Login met je GSM nummer</ion-label>
+        </ion-item>
+
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
 
 </ion-content>
