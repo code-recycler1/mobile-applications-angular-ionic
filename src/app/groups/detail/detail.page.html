@@ -17,7 +17,7 @@
 <ion-content>
   <ion-list lines="full">
     <app-member-item
-      *ngFor="let m of this.groupService.getAllGroupMembers(group.members)" [member]="m">
+      *ngFor="let m of this.members" [member]="m" (click)="this.presentEditMemberAlert(m)">
     </app-member-item>
   </ion-list>
 

@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {Group} from '../datatypes/group';
 import {ActionSheetController, AlertController} from '@ionic/angular';
 import {MemberService} from './member.service';
-import {User} from '../datatypes/user';
 import {Router} from '@angular/router';
 import {UserService} from './user.service';
 
@@ -14,6 +13,7 @@ export class GroupService {
   #id: number = 1;
   #ownerId: number = 1;
 
+  //region ctor
   constructor(public memberService: MemberService,
               public userService: UserService,
               private router: Router,
@@ -21,6 +21,8 @@ export class GroupService {
               private alertController: AlertController) {
     this.#groupList = this.getAllGroups();
   }
+
+  //endregion
 
   //region Create Group
   async presentCreateGroupAlert(name?: string): Promise<void> {
@@ -87,7 +89,7 @@ export class GroupService {
       name,
       code: this.generateRandomCode(10),
       ownerId: this.#ownerId,
-      members: [this.#ownerId]
+      memberIds: [this.#ownerId]
     });
     this.#id++;
   }
@@ -191,22 +193,18 @@ export class GroupService {
 
   //endregion
 
-  //region Helper Methods
-  generateDummyGroups(): void {
-    for (let i = 1; i <= 10; i++) {
+  //region Extra Helper Methods
+  generateDummyGroups(count: number): void {
+    for (let i = 1; i <= count; i++) {
       this.#groupList.push({
         name: 'Group ' + i,
         _id: this.#id,
         code: i == 2 ? 'testGroupCode' : this.generateRandomCode(10),
         ownerId: i == this.#ownerId ? this.#ownerId : i,
-        members: this.memberService.generateDummyMembers()
+        memberIds: this.memberService.generateDummyMemberIds()
       });
       this.#id++;
     }
-  }
-
-  getAllGroups(): Group[] {
-    return this.#groupList;
   }
 
   private generateRandomCode(length: number): string {
@@ -220,18 +218,21 @@ export class GroupService {
   }
 
   //endregion
-  getGroup(id: number): Group | undefined {
-    return this.#groupList.find(g => g._id == id);
+
+  //region Get Group Methods
+  getGroupById(groupId: number): Group | undefined {
+    return this.#groupList.find(g => g._id == groupId);
   }
 
-  getAllGroupMembers(memberIds: number[]): User[] {
-    const users: User[] = [];
-    for (const id in memberIds) {
-      const user = this.userService.getUserById(Number(id));
-      if (user !== undefined) {
-        users.push(user);
-      }
-    }
-    return users;
+  getGroupOwnerIdByGroupId(groupId: number): number | undefined {
+    return this.#groupList.find(g => g._id == groupId)?.ownerId;
   }
+  getAllGroups(): Group[] {
+    return this.#groupList;
+  }
+  getMyGroups():Group[]{
+    return this.#groupList;
+  }
+  //endregion
+
 }

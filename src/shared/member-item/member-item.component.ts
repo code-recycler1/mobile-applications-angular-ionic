@@ -1,5 +1,4 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {ActionSheetController} from '@ionic/angular';
 import {User} from '../../datatypes/user';
 import {GroupService} from '../../services/group.service';
 
@@ -16,37 +15,21 @@ export class MemberItemComponent implements OnInit {
   isEmpty!: boolean;
 
   //region ctor
-  constructor(public groupService: GroupService,
-              private actionSheetCtrl: ActionSheetController) {
+  constructor(public groupService: GroupService) {
   }
+
   //endregion
 
+  //region ng
   ngOnInit(): void {
-    if (this.member._id == this.groupService.getGroup(1)?.ownerId){
+    console.log('MemberItemComponent triggered...');
+    if (this.member._id == this.groupService.getGroupById(1)?.ownerId) {
       this.isGroupOwner = true;
     }
+    console.log(this.isGroupOwner);
   }
 
-  async presentEditMemberAlert(): Promise<void> {
-    const alert = await this.actionSheetCtrl.create({
-      header: 'Jackie Robinson',
-      buttons: [{
-        text: '',
-        cssClass: 'copy-button'
-      }, {
-        text: 'Give ownership'
-      }, {
-        text: 'Remove'
-      }, {
-        text: 'Cancel',
-        role: 'cancel',
-        cssClass: 'secondary'
-      }]
-    });
+  //endregion
 
-    await alert.present();
 
-    const copyButtonEl = document.querySelector('.copy-button');
-    copyButtonEl!.innerHTML = 'Copy phone number <ion-icon name="copy-outline"></ion-icon>';
-  }
 }

@@ -3,5 +3,5 @@ export interface Group {
   name: string;
   code: string;
   ownerId: number;
-  members: number[];
+  memberIds: number[];
 }

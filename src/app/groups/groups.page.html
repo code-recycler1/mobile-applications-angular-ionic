@@ -4,7 +4,7 @@
       Groups
     </ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="groupService.presentCreateGroupAlert()">
+      <ion-button (click)="this.groupService.presentCreateGroupAlert()">
         <ion-icon name="add-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -14,7 +14,7 @@
 <ion-content>
   <ion-list lines="full">
     <app-group-item
-      *ngFor="let g of groupService.getAllGroups()" [group]="g">
+      *ngFor="let g of this.groupService.getMyGroups()" [group]="g">
     </app-group-item>
   </ion-list>
 </ion-content>
@@ -22,7 +22,7 @@
 <ion-footer>
   <ion-item lines="full">
     <ion-label>Do you have a groupcode?</ion-label>
-    <ion-button slot="end" (click)="groupService.presentEnterGroupCodeAlert()">
+    <ion-button slot="end" (click)="this.groupService.presentEnterGroupCodeAlert()">
       Enter code
     </ion-button>
   </ion-item>

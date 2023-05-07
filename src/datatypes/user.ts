@@ -3,5 +3,5 @@ export interface User {
   lastname: string;
   firstname: string;
   dob: string;
-  phone: number;
+  phoneNumber: number;
 }

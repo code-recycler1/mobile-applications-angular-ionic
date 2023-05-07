@@ -1,4 +1,4 @@
-<ion-item (click)="this.presentEditMemberAlert()">
+<ion-item>
   <ion-icon name="{{isGroupOwner ? 'ribbon-outline' : 'person-circle'}}" slot="start"></ion-icon>
   <ion-label>{{member.firstname}} {{member.lastname}} - {{member.dob}}</ion-label>
   <ion-label *ngIf="isEmpty">Send the group code to invite new members. You can find it at the bottom of this page.</ion-label>

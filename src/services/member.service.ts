@@ -14,11 +14,10 @@ export class MemberService {
   }
 
   //region Helper Methods
-  generateDummyMembers(): number[] {
+  generateDummyMemberIds(): number[] {
     const numMembers = Math.floor(Math.random() * 10) + 1;
     const memberIds: number[] = [];
 
-    // loop through and generate unique member IDs
     while (memberIds.length < numMembers) {
       const userId = Math.floor(Math.random() * this.#userList.length) + 1;
       if (!memberIds.includes(userId)) {

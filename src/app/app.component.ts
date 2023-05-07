@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {GroupService} from '../services/group.service';
 import {UserService} from '../services/user.service';
 
@@ -7,10 +7,18 @@ import {UserService} from '../services/user.service';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   constructor(public groupService: GroupService,
               public userService: UserService) {
-    this.userService.generateDummyUsers(20);
-    this.groupService.generateDummyGroups();
+  }
+
+  ngOnInit(): void {
+    console.log('AppComponent triggered...');
+    this.setData();
+  }
+
+  setData(): void {
+    this.userService.generateDummyUsers(30);
+    this.groupService.generateDummyGroups(20);
   }
 }

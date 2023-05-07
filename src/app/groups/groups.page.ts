@@ -11,6 +11,7 @@ export class GroupsPage implements OnInit {
   constructor(public groupService: GroupService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
+    console.log('GroupsPage triggered...')
   }
 }
