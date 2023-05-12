@@ -7,26 +7,12 @@ import {User} from '../datatypes/user';
 })
 export class MemberService {
 
-  #userList: User[] = [];
+  constructor() {
 
-  constructor(public userService: UserService) {
-    this.#userList = this.userService.getAllUsers();
   }
 
   //region Helper Methods
-  generateDummyMemberIds(): number[] {
-    const numMembers = Math.floor(Math.random() * 10) + 1;
-    const memberIds: number[] = [];
 
-    while (memberIds.length < numMembers) {
-      const userId = Math.floor(Math.random() * this.#userList.length) + 1;
-      if (!memberIds.includes(userId)) {
-        memberIds.push(userId);
-      }
-    }
-
-    return memberIds;
-  }
 
   //endregion
 }

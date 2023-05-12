@@ -24,33 +24,20 @@ export class DetailPage implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('DetailPage triggered...')
+    console.log('DetailPage triggered...');
     this.setData();
   }
 
   setData(): void {
     const id = this.activatedRoute.snapshot.paramMap.get('id');
 
-    if (id === null) {
-      return;
-    }
+    if (id === null) return;
+
     const group = this.groupService.getGroupById(Number(id));
 
     if (group) {
       this.group = group;
     }
-
-    if (group?.ownerId == this.userService.getUserById(1)?._id) {
-      this.isGroupOwner = true;
-    }
-
-    for (const memberId in group?.memberIds) {
-      const user: User | undefined = this.userService.getUserById(Number(memberId));
-      if (user) {
-        this.members.push(user);
-      }
-    }
-    console.log(this.members);
   }
 
   async presentEditMemberAlert(member: User): Promise<void> {
@@ -94,7 +81,7 @@ export class DetailPage implements OnInit {
   }
 
   private giveOwnership(id: number): void {
-    console.log(`Gave ownership to ${id}`)
+    console.log(`Gave ownership to ${id}`);
   }
 
   private deleteMember(id: number): void {

@@ -4,14 +4,16 @@ import {ActionSheetController, AlertController} from '@ionic/angular';
 import {MemberService} from './member.service';
 import {Router} from '@angular/router';
 import {UserService} from './user.service';
+import {code} from 'ionicons/icons';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GroupService {
-  #groupList: Group[] = [];
   #id: number = 1;
   #ownerId: number = 1;
+  #groupList: Group[] = this.generateDummyGroups(10);
+  #myGroups: Group [] = this.getMyGroups();
 
   //region ctor
   constructor(public memberService: MemberService,
@@ -19,7 +21,7 @@ export class GroupService {
               private router: Router,
               private actionSheetCtrl: ActionSheetController,
               private alertController: AlertController) {
-    this.#groupList = this.getAllGroups();
+    console.log('All Groups', this.#groupList);
   }
 
   //endregion
@@ -97,7 +99,7 @@ export class GroupService {
   //endregion
 
   //region Delete Group
-  async presentDeleteGroupActionSheet(id: number, name?: string): Promise<void> {
+  async presentDeleteGroupActionSheet(groupId: number, name?: string): Promise<void> {
     const actionSheet = await this.actionSheetCtrl.create({
       header: `Are you sure you want to delete "${name}"`,
       buttons: [
@@ -105,7 +107,7 @@ export class GroupService {
           text: 'Delete',
           role: 'destructive',
           handler: () => {
-            this.deleteGroup(id);
+            this.deleteGroup(groupId);
           }
         },
         {
@@ -121,8 +123,8 @@ export class GroupService {
     await actionSheet.present();
   }
 
-  private deleteGroup(id: number): void {
-    this.#groupList = this.#groupList.filter(t => t._id !== id);
+  private deleteGroup(groupId: number): void {
+    this.#groupList = this.#groupList.filter(t => t._id !== groupId);
     this.router.navigateByUrl('/tabs/groups').then();
   }
 
@@ -140,7 +142,7 @@ export class GroupService {
         }, {
           text: 'Join',
           handler: (data) => {
-            this.joinGroup(data.code);
+
           }
         }
       ],
@@ -156,22 +158,36 @@ export class GroupService {
     await alert.present();
   }
 
+  async presentInvalidCodeAlert(): Promise<void> {
+    const alert = await this.alertController.create({
+      message: 'Please enter a valid code.',
+      buttons: ['OK']
+    });
+
+    await alert.present();
+  }
+
   private joinGroup(code: string): void {
-    this.#groupList.push();
+    const group = this.getGroupByCode(code);
+
+    if (group) {
+      if (this.#myGroups.indexOf(group)) return;
+      this.#myGroups.push(group);
+    }
   }
 
   //endregion
 
   //region Leave Group
-  async presentLeaveGroupActionSheet(id: number, name: string): Promise<void> {
+  async presentLeaveGroupActionSheet(groupId: number, groupName: string): Promise<void> {
     const actionSheet = await this.actionSheetCtrl.create({
-      header: `Are you sure you want to leave "${name}" ?`,
+      header: `Are you sure you want to leave "${groupName}" ?`,
       buttons: [
         {
           text: 'Leave',
           role: 'destructive',
           handler: () => {
-            this.leaveGroup(id);
+            this.leaveGroup(groupId);
           }
         },
         {
@@ -187,24 +203,29 @@ export class GroupService {
     await actionSheet.present();
   }
 
-  private leaveGroup(id: number): void {
-    this.#groupList = this.#groupList.filter(t => t._id !== id);
+  private leaveGroup(groupId: number): void {
+    this.#groupList = this.#groupList.filter(t => t._id !== groupId);
   }
 
   //endregion
 
-  //region Extra Helper Methods
-  generateDummyGroups(count: number): void {
+  //region Helpers
+  generateDummyGroups(count: number): Group[] {
+    const dummyGroups: Group[] = [];
+
     for (let i = 1; i <= count; i++) {
-      this.#groupList.push({
+      let group = {
         name: 'Group ' + i,
         _id: this.#id,
         code: i == 2 ? 'testGroupCode' : this.generateRandomCode(10),
-        ownerId: i == this.#ownerId ? this.#ownerId : i,
-        memberIds: this.memberService.generateDummyMemberIds()
-      });
+        ownerId: i,
+        memberIds: [i]
+      };
+      dummyGroups.push(group);
       this.#id++;
     }
+
+    return dummyGroups;
   }
 
   private generateRandomCode(length: number): string {
@@ -219,20 +240,25 @@ export class GroupService {
 
   //endregion
 
-  //region Get Group Methods
+  //region Methods
+  //region Get
   getGroupById(groupId: number): Group | undefined {
     return this.#groupList.find(g => g._id == groupId);
   }
 
-  getGroupOwnerIdByGroupId(groupId: number): number | undefined {
-    return this.#groupList.find(g => g._id == groupId)?.ownerId;
+  getGroupByCode(code: string): Group | undefined {
+    return this.#groupList.find(g => g.code == code);
   }
+
   getAllGroups(): Group[] {
     return this.#groupList;
   }
-  getMyGroups():Group[]{
+
+  getMyGroups(): Group[] {
     return this.#groupList;
   }
+
+  //endregion
   //endregion
 
 }

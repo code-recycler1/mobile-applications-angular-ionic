@@ -20,9 +20,7 @@ export class GroupItemComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.group?.ownerId == this.userService.getUserById(1)?._id){
-      this.isGroupOwner = true;
-    }
+
   }
 
 }

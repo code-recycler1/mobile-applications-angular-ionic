@@ -23,10 +23,6 @@ export class MemberItemComponent implements OnInit {
   //region ng
   ngOnInit(): void {
     console.log('MemberItemComponent triggered...');
-    if (this.member._id == this.groupService.getGroupById(1)?.ownerId) {
-      this.isGroupOwner = true;
-    }
-    console.log(this.isGroupOwner);
   }
 
   //endregion

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActionSheetController} from '@ionic/angular';
 
 @Component({
@@ -8,14 +8,15 @@ import {ActionSheetController} from '@ionic/angular';
 })
 export class HomePage implements OnInit {
 
-  constructor(private actionSheetCtrl: ActionSheetController) { }
+  constructor(private actionSheetCtrl: ActionSheetController) {
+  }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
   async presentActionSheet() {
     const actionSheet = await this.actionSheetCtrl.create({
-      header:'New',
+      header: 'New',
       buttons: [
         {
           text: 'Event',
