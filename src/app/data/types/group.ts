@@ -1,5 +1,5 @@
 export interface Group {
-  _id: number;
+  id: number;
   name: string;
   code: string;
   ownerId: number;

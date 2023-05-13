@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {GroupService} from '../../data/services/group.service';
 import {ActivatedRoute} from '@angular/router';
 import {Group} from '../../data/types/group';
-import {User} from '../../data/types/user';
+import {Profile} from '../../data/types/profile';
 import {ActionSheetController} from '@ionic/angular';
 
 @Component({
@@ -13,7 +13,7 @@ import {ActionSheetController} from '@ionic/angular';
 export class DetailPage implements OnInit {
 
   group!: Group;
-  members: User[] = [];
+  members: Profile[] = [];
   isGroupOwner!: boolean;
 
   constructor(public groupService: GroupService,
@@ -38,18 +38,18 @@ export class DetailPage implements OnInit {
     }
   }
 
-  async presentEditMemberAlert(member: User): Promise<void> {
+  async presentEditMemberAlert(member: Profile): Promise<void> {
     let ownerButtons = [{
       text: 'Give ownership',
       cssClass: '',
       handler: () => {
-        this.giveOwnership(member._id);
+        this.giveOwnership(member.id);
       }
     }, {
       text: 'Remove',
       cssClass: '',
       handler: () => {
-        this.deleteMember(member._id);
+        this.deleteMember(member.id);
       }
     }];
 
@@ -78,11 +78,11 @@ export class DetailPage implements OnInit {
     await navigator.clipboard.writeText(String(phoneNumber));
   }
 
-  private giveOwnership(id: number): void {
-    console.log(`Gave ownership to ${id}`);
+  private giveOwnership(userId: string): void {
+    console.log(`Gave ownership to ${userId}`);
   }
 
-  private deleteMember(id: number): void {
+  private deleteMember(userId: string): void {
 
   }
 }

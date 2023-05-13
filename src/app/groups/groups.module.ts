@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { GroupsPageRoutingModule } from './groups-routing.module';
 
 import { GroupsPage } from './groups.page';
-import {GroupItemComponent} from '../../shared/group-item/group-item.component';
+import {GroupItemComponent} from './group-item/group-item.component';
 
 @NgModule({
   imports: [

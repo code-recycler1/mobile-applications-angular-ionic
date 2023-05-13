@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Group} from '../../app/data/types/group';
+import {Group} from '../../data/types/group';
 import {ActivatedRoute, Router} from '@angular/router';
-import {GroupService} from '../../app/data/services/group.service';
+import {GroupService} from '../../data/services/group.service';
 
 @Component({
   selector: 'app-group-item[group]',

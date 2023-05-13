@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {IonicModule} from '@ionic/angular';
 import {RouterModule} from '@angular/router';
-import {MemberItemComponent} from './member-item/member-item.component';
+import {MemberItemComponent} from '../app/groups/detail/member-item/member-item.component';
 
 @NgModule({
   declarations: [MemberItemComponent],

@@ -7,7 +7,7 @@
       {{group.name}}
     </ion-title>
     <ion-buttons slot="end" *ngIf="isGroupOwner">
-      <ion-button (click)="this.groupService.presentDeleteGroupActionSheet(group._id, group.name)">
+      <ion-button (click)="this.groupService.presentDeleteGroupActionSheet(group.id, group.name)">
         <ion-icon name="trash"></ion-icon>
       </ion-button>
     </ion-buttons>

@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { DetailPageRoutingModule } from './detail-routing.module';
 
 import { DetailPage } from './detail.page';
-import {SharedModule} from '../../../shared/shared.module';
+import {MemberItemComponent} from './member-item/member-item.component';
 
 @NgModule({
   imports: [
@@ -15,8 +15,7 @@ import {SharedModule} from '../../../shared/shared.module';
     FormsModule,
     IonicModule,
     DetailPageRoutingModule,
-    SharedModule
   ],
-  declarations: [DetailPage]
+  declarations: [DetailPage, MemberItemComponent]
 })
 export class DetailPageModule {}

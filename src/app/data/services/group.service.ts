@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Group} from '../types/group';
 import {ActionSheetController, AlertController} from '@ionic/angular';
-import {MemberService} from './member.service';
 import {Router} from '@angular/router';
 
 @Injectable({
@@ -83,7 +82,7 @@ export class GroupService {
 
   private createGroup(name: string): void {
     this.#groupList.push({
-      _id: this.#id,
+      id: this.#id,
       name,
       code: this.generateRandomCode(10),
       ownerId: this.#ownerId,
@@ -120,7 +119,7 @@ export class GroupService {
   }
 
   private deleteGroup(groupId: number): void {
-    this.#groupList = this.#groupList.filter(t => t._id !== groupId);
+    this.#groupList = this.#groupList.filter(t => t.id !== groupId);
     this.router.navigateByUrl('/tabs/groups').then();
   }
 
@@ -200,7 +199,7 @@ export class GroupService {
   }
 
   private leaveGroup(groupId: number): void {
-    this.#groupList = this.#groupList.filter(t => t._id !== groupId);
+    this.#groupList = this.#groupList.filter(t => t.id !== groupId);
   }
 
   //endregion
@@ -212,7 +211,7 @@ export class GroupService {
     for (let i = 1; i <= count; i++) {
       let group = {
         name: 'Group ' + i,
-        _id: this.#id,
+        id: this.#id,
         code: i == 2 ? 'testGroupCode' : this.generateRandomCode(10),
         ownerId: i,
         memberIds: [i]
@@ -239,7 +238,7 @@ export class GroupService {
   //region Methods
   //region Get
   getGroupById(groupId: number): Group | undefined {
-    return this.#groupList.find(g => g._id == groupId);
+    return this.#groupList.find(g => g.id == groupId);
   }
 
   getGroupByCode(code: string): Group | undefined {
