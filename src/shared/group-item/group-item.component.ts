@@ -2,7 +2,6 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Group} from '../../app/data/types/group';
 import {ActivatedRoute, Router} from '@angular/router';
 import {GroupService} from '../../app/data/services/group.service';
-import {UserService} from '../../app/data/services/user.service';
 
 @Component({
   selector: 'app-group-item[group]',
@@ -15,7 +14,7 @@ export class GroupItemComponent implements OnInit {
 
   isGroupOwner!: boolean;
 
-  constructor(public groupService: GroupService, public userService: UserService,
+  constructor(public groupService: GroupService,
               public activatedRoute: ActivatedRoute, public router: Router) {
   }
 

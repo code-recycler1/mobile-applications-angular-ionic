@@ -3,8 +3,6 @@ import {Group} from '../types/group';
 import {ActionSheetController, AlertController} from '@ionic/angular';
 import {MemberService} from './member.service';
 import {Router} from '@angular/router';
-import {UserService} from './user.service';
-import {code} from 'ionicons/icons';
 
 @Injectable({
   providedIn: 'root'
@@ -16,9 +14,7 @@ export class GroupService {
   #myGroups: Group [] = this.getMyGroups();
 
   //region ctor
-  constructor(public memberService: MemberService,
-              public userService: UserService,
-              private router: Router,
+  constructor(private router: Router,
               private actionSheetCtrl: ActionSheetController,
               private alertController: AlertController) {
     console.log('All Groups', this.#groupList);

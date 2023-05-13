@@ -1,6 +1,4 @@
-import {Component, OnInit} from '@angular/core';
-import {GroupService} from './data/services/group.service';
-import {UserService} from './data/services/user.service';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-root',

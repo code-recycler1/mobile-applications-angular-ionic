@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {GroupService} from '../../data/services/group.service';
 import {ActivatedRoute} from '@angular/router';
 import {Group} from '../../data/types/group';
-import {UserService} from '../../data/services/user.service';
 import {User} from '../../data/types/user';
 import {ActionSheetController} from '@ionic/angular';
 
@@ -18,7 +17,6 @@ export class DetailPage implements OnInit {
   isGroupOwner!: boolean;
 
   constructor(public groupService: GroupService,
-              public userService: UserService,
               public activatedRoute: ActivatedRoute,
               public actionSheetCtrl: ActionSheetController) {
   }
