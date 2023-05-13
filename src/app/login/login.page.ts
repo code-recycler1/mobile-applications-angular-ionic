@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {Capacitor} from '@capacitor/core';
-import {AuthService} from '../../services/auth.service';
-import {ModalController} from '@ionic/angular';
 import {PhoneVerificationComponent} from './phone-verification/phone-verification.component';
+import {Capacitor} from '@capacitor/core';
+import {AuthService} from '../data/services/auth.service';
+import {ModalController} from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -10,7 +10,6 @@ import {PhoneVerificationComponent} from './phone-verification/phone-verificatio
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
-
   isNative = Capacitor.isNativePlatform();
 
   constructor(public authService: AuthService, private modalController: ModalController) { }
@@ -22,8 +21,6 @@ export class LoginPage implements OnInit {
     return await modal.present();
   }
 
-
   ngOnInit() {
   }
-
 }

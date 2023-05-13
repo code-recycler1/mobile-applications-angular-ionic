@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {User} from '../../datatypes/user';
-import {GroupService} from '../../services/group.service';
+import {User} from '../../app/data/types/user';
+import {GroupService} from '../../app/data/services/group.service';
 
 @Component({
   selector: 'app-member-item',

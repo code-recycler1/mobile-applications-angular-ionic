@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {AuthService} from '../../../services/auth.service';
+import {AuthService} from '../../data/services/auth.service';
 import {ModalController} from '@ionic/angular';
-import {CallingCode} from '../../../datatypes/callingCode';
+import {CallingCode} from '../../data/types/callingCode';
 
 @Component({
   selector: 'app-phone-verification',

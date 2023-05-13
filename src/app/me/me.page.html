@@ -6,12 +6,12 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content *ngIf="(authService.currentUser | async); let user">
 
   <ion-list lines="full">
     <ion-item (click)="presentEditProfileAlert()">
       <ion-icon name="person-circle" slot="start"></ion-icon>
-      <ion-label>Dennis Nijs - 23/09/1991</ion-label>
+      <ion-label>{{user.displayName}} - 23/09/1991</ion-label>
       <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
     </ion-item>
 
@@ -50,6 +50,6 @@
 </ion-content>
 
 <ion-footer class="ion-text-center">
-  <ion-button>Sign out</ion-button>
+  <ion-button (click)="authService.signOut()">Sign out</ion-button>
   <ion-button color="danger">Delete account</ion-button>
 </ion-footer>

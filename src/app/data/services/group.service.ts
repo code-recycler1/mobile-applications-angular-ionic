@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Group} from '../datatypes/group';
+import {Group} from '../types/group';
 import {ActionSheetController, AlertController} from '@ionic/angular';
 import {MemberService} from './member.service';
 import {Router} from '@angular/router';

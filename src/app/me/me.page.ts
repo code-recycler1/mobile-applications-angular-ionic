@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {AlertController} from '@ionic/angular';
+import {AuthService} from '../data/services/auth.service';
 
 @Component({
   selector: 'app-me',
@@ -8,7 +9,7 @@ import {AlertController} from '@ionic/angular';
 })
 export class MePage implements OnInit {
 
-  constructor(private alertController: AlertController) { }
+  constructor(public authService: AuthService, private alertController: AlertController) { }
 
   ngOnInit() {
   }

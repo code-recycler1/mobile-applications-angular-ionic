@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {GroupService} from '../../../services/group.service';
+import {GroupService} from '../../data/services/group.service';
 import {ActivatedRoute} from '@angular/router';
-import {Group} from '../../../datatypes/group';
-import {UserService} from '../../../services/user.service';
-import {User} from '../../../datatypes/user';
+import {Group} from '../../data/types/group';
+import {UserService} from '../../data/services/user.service';
+import {User} from '../../data/types/user';
 import {ActionSheetController} from '@ionic/angular';
 
 @Component({
