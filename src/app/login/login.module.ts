@@ -1,13 +1,14 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 
-import { IonicModule } from '@ionic/angular';
+import {IonicModule} from '@ionic/angular';
 
-import { LoginPageRoutingModule } from './login-routing.module';
+import {LoginPageRoutingModule} from './login-routing.module';
 
-import { LoginPage } from './login.page';
+import {LoginPage} from './login.page';
 import {PhoneVerificationComponent} from './phone-verification/phone-verification.component';
+import {EmailVerificationComponent} from './email-verification/email-verification.component';
 
 @NgModule({
   imports: [
@@ -16,6 +17,7 @@ import {PhoneVerificationComponent} from './phone-verification/phone-verificatio
     IonicModule,
     LoginPageRoutingModule
   ],
-  declarations: [LoginPage, PhoneVerificationComponent]
+  declarations: [LoginPage, PhoneVerificationComponent, EmailVerificationComponent]
 })
-export class LoginPageModule {}
+export class LoginPageModule {
+}

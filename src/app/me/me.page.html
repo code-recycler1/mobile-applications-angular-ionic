@@ -6,12 +6,12 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="(authService.currentUser | async); let user">
+<ion-content *ngIf="(this.authService.currentUser | async); let user">
 
   <ion-list lines="full">
     <ion-item (click)="presentEditProfileAlert()">
       <ion-icon name="person-circle" slot="start"></ion-icon>
-      <ion-label>{{user.displayName}} - 23/09/1991</ion-label>
+      <ion-label>{{this.user.displayName}} - 23/09/1991</ion-label>
       <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
     </ion-item>
 
@@ -21,7 +21,7 @@
       <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
     </ion-item>
 
-    <ion-item>
+    <ion-item (click)="this.authService.forgotPassword(user.email || 'test')">
       <ion-icon name="key-outline" slot="start"></ion-icon>
       <ion-label>Reset password</ion-label>
       <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
@@ -50,6 +50,6 @@
 </ion-content>
 
 <ion-footer class="ion-text-center">
-  <ion-button (click)="authService.signOut()">Sign out</ion-button>
-  <ion-button color="danger">Delete account</ion-button>
+  <ion-button (click)="this.authService.signOut()">Sign out</ion-button>
+  <ion-button color="danger" (click)="this.presentDeleteAccountAlert()">Delete my account</ion-button>
 </ion-footer>

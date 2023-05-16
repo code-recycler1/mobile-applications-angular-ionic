@@ -1,7 +1,9 @@
 export interface Group {
-  id: number;
+  id?: string;
   name: string;
+  street: string;
+  city: string;
   code: string;
-  ownerId: number;
-  memberIds: number[];
+  ownerId: string;
+  memberIds?: string[];
 }

@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button color="medium" (click)="this.cancel()">
+        Cancel
+      </ion-button>
+    </ion-buttons>
+    <ion-title>New Group</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="this.createGroup()">
+        Save
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-item>
+    <ion-label position="floating">Group name</ion-label>
+    <ion-input [(ngModel)]="name" [clearInput]="true"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">Street</ion-label>
+    <ion-input [(ngModel)]="street" [clearInput]="true"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">City</ion-label>
+    <ion-input [(ngModel)]="city" [clearInput]="true"></ion-input>
+  </ion-item>
+</ion-content>

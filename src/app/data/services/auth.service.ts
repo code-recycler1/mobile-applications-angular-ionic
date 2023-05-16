@@ -1,8 +1,14 @@
 import {Injectable} from '@angular/core';
 import {FirebaseAuthentication} from '@capacitor-firebase/authentication';
 import {Router} from '@angular/router';
-import {Auth, signInWithCredential, signOut, Unsubscribe} from '@angular/fire/auth';
-import {updateProfile, GoogleAuthProvider, PhoneAuthProvider, User} from 'firebase/auth';
+import {
+  Auth,
+  createUserWithEmailAndPassword,
+  signInWithCredential,
+  signOut,
+  Unsubscribe
+} from '@angular/fire/auth';
+import {updateProfile, GoogleAuthProvider, PhoneAuthProvider, EmailAuthProvider, User} from 'firebase/auth';
 import {Capacitor} from '@capacitor/core';
 import {BehaviorSubject} from 'rxjs';
 
@@ -23,6 +29,7 @@ export class AuthService {
     return this.currentUser.value !== null;
   }
 
+  //region Get methods
   getProfilePic(): string {
     const placeholder = '/assets/Portrait_Placeholder.png';
     return this.currentUser.value?.photoURL ?? placeholder;
@@ -40,6 +47,8 @@ export class AuthService {
     return this.currentUser.value?.uid;
   }
 
+  //endregion
+
   async signOut(): Promise<void> {
     await FirebaseAuthentication.signOut();
 
@@ -47,7 +56,35 @@ export class AuthService {
       await signOut(this.auth);
     }
   }
+  async deleteMyAccount(): Promise<void> {
+    await FirebaseAuthentication.deleteUser();
 
+    // if (Capacitor.isNativePlatform()) {
+    //   await deleteUser();
+    // }
+  }
+
+  async forgotPassword(email: string) :Promise<void>{
+    if (this.isLoggedIn()){
+      await this.signOut()
+    }
+    await FirebaseAuthentication.sendPasswordResetEmail({email})
+  }
+
+  //region Sign in with email and password
+  async signInWithEmailAndPassword(email: string, password: string): Promise<void> {
+    try {
+      const credential = EmailAuthProvider.credential(email, password);
+      await signInWithCredential(this.auth, credential);
+    } catch (error: any) {
+      if (error.code == 'auth/user-not-found') {
+        await createUserWithEmailAndPassword(this.auth, email, password);
+      }
+    }
+  }
+  //endregion
+
+  //region Sign in with Google
   async signInWithGoogle(): Promise<void> {
     // Sign in on the native layer.
     const {credential} = await FirebaseAuthentication.signInWithGoogle();
@@ -65,6 +102,9 @@ export class AuthService {
     }
   }
 
+  //endregion
+
+  //region Sign in with phone number
   /**
    * The login process for a phone is seperated in 2 part.
    *  1. A Verification code is send to the user. <-- This method.
@@ -93,6 +133,8 @@ export class AuthService {
     const credential = PhoneAuthProvider.credential(this.#verificationId, verificationCode);
     await signInWithCredential(this.auth, credential);
   };
+
+  //endregion
 
   async updateDisplayName(displayName: string): Promise<void> {
     if (!this.auth.currentUser) {

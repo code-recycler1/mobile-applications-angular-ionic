@@ -1,31 +1,31 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Login</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content class="ion-align-items-stretch">
-
+<ion-content>
   <ion-grid>
-    <ion-row>
-      <ion-col offsetXs="0" offsetSm="3" offsetMd="4" sizeXs="12" sizeSm="6" sizeMd="4">
-        <ion-item class="ion-margin-vertical" color="light" (click)="authService.signInWithGoogle()">
-          <div slot="start">
-            <ion-icon size="large" name="logo-google"></ion-icon>
-          </div>
-          <ion-label>Login in with Google</ion-label>
-        </ion-item>
+    <ion-row class="ion-justify-content-center">
+      <ion-col sizeXs="12" sizeSm="9" sizeMd="7" size-xl="4">
+        <!--        <ion-img src="assets/icon/favicon.png"/>-->
+        <div class="ion-text-center">
+          <h1>Welcome to Sportify!</h1>
+          <p>A new way to organize your events and get a better headcount overview!</p>
+        </div>
+        <ion-list>
+          <h4 class="ion-text-center">Login or sign up!</h4>
+          <app-email-verification></app-email-verification>
+          <ion-item class="ion-margin-vertical" color="light" (click)="authService.signInWithGoogle()">
+            <div slot="start">
+              <ion-icon size="large" name="logo-google"></ion-icon>
+            </div>
+            <ion-label>With Google</ion-label>
+            <ion-icon size="medium" name="send-outline"></ion-icon>
+          </ion-item>
+        </ion-list>
 
         <ion-item *ngIf="isNative" class="ion-margin-vertical" color="light" (click)="showPhoneVerification()">
           <div slot="start">
             <ion-icon size="large" name="chatbox-ellipses"></ion-icon>
           </div>
-          <ion-label>Login with your phone number</ion-label>
+          <ion-label>With your phone number</ion-label>
         </ion-item>
-
       </ion-col>
     </ion-row>
-
   </ion-grid>
-
 </ion-content>

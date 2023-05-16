@@ -1,34 +1,39 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/"></ion-back-button>
-    </ion-buttons>
-    <ion-title>
-      {{group.name}}
-    </ion-title>
-    <ion-buttons slot="end" *ngIf="isGroupOwner">
-      <ion-button (click)="this.groupService.presentDeleteGroupActionSheet(group.id, group.name)">
-        <ion-icon name="trash"></ion-icon>
+<div *ngIf="group | async as g">
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-back-button defaultHref="/"></ion-back-button>
+      </ion-buttons>
+      <ion-title>
+        {{g.name}}
+      </ion-title>
+      <ion-buttons slot="end" *ngIf="isGroupOwner">
+        <ion-button>
+          <ion-icon name="trash"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+    <ion-list lines="full">
+      <!--    <app-member-item
+            *ngFor="let m of this.members" [member]="m" (click)="this.presentEditMemberAlert(m)">
+          </app-member-item>-->
+      <ion-item>
+
+      </ion-item>
+    </ion-list>
+
+  </ion-content>
+
+  <ion-footer>
+    <ion-item lines="full">
+      <ion-label>Invite new members:</ion-label>
+      <ion-input value="{{g.code}}"></ion-input>
+      <ion-button>
+        <ion-icon name="copy-outline" (click)="this.copyGroupCode(g.code)"></ion-icon>
       </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content>
-  <ion-list lines="full">
-    <app-member-item
-      *ngFor="let m of this.members" [member]="m" (click)="this.presentEditMemberAlert(m)">
-    </app-member-item>
-  </ion-list>
-
-</ion-content>
-
-<ion-footer>
-  <ion-item lines="full">
-    <ion-label>Invite new members:</ion-label>
-    <ion-input value="{{group.code}}"></ion-input>
-    <ion-button>
-      <ion-icon name="copy-outline"></ion-icon>
-    </ion-button>
-  </ion-item>
-</ion-footer>
+    </ion-item>
+  </ion-footer>
+</div>

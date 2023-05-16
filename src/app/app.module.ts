@@ -11,10 +11,21 @@ import {provideFirebaseApp, initializeApp} from '@angular/fire/app';
 import {environment} from '../environments/environment';
 import {getAuth, provideAuth} from '@angular/fire/auth';
 
+import {enableMultiTabIndexedDbPersistence,
+  getFirestore, provideFirestore} from '@angular/fire/firestore';
+
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule,
+  imports: [
+    BrowserModule,
+    IonicModule.forRoot(),
+    AppRoutingModule,
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
+    provideFirestore(() => {
+      const firestore = getFirestore();
+      enableMultiTabIndexedDbPersistence(firestore);
+      return firestore;
+    }),
     provideAuth(() => getAuth())
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],

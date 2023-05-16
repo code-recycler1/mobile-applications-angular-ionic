@@ -1,5 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {GroupService} from '../data/services/group.service';
+import {NewGroupComponent} from './new-group/new-group.component';
+import {ModalController} from '@ionic/angular';
+import {AuthService} from '../data/services/auth.service';
+import {DatabaseService} from '../data/services/database.service';
+import {Observable, of} from 'rxjs';
+import {Group} from '../data/types/group';
 
 @Component({
   selector: 'app-groups',
@@ -8,10 +13,28 @@ import {GroupService} from '../data/services/group.service';
 })
 export class GroupsPage implements OnInit {
 
-  constructor(public groupService: GroupService) {
+  groups: Observable<Group[]> = of([]);
+
+  constructor(public authService: AuthService,
+              private databaseService: DatabaseService,
+              private modalCtrl: ModalController) {
+    this.authService.currentUser.subscribe(u => {
+      if (u) {
+        this.groups = databaseService.retrieveMyGroupsList();
+      } else {
+        this.groups = of([]);
+      }
+    });
   }
 
   ngOnInit(): void {
-    console.log('GroupsPage triggered...')
+    console.log(this.groups);
+  }
+
+  async showNewGroupModal(): Promise<void> {
+    const modal = await this.modalCtrl.create({
+      component: NewGroupComponent
+    });
+    return await modal.present();
   }
 }

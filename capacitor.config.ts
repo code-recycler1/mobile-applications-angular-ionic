@@ -11,7 +11,7 @@ const config: CapacitorConfig = {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     FirebaseAuthentication: {
       skipNativeAuth: false,
-      providers: ['phone'],
+      providers: ['phone', 'google.com', 'password'],
     }
   }
 };
