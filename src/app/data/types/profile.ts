@@ -1,14 +1,7 @@
-/*export interface Profile {
+export interface Profile {
+  dob: string;
+  email: string;
+  firstname: string;
   id: string;
   lastname: string;
-  firstname: string;
-  email: string;
-  dob: string;
-  phoneNumber?: string;
-}*/
-
-export interface Profile {
-  name: string;
-  email: string;
-  id: string;
 }

@@ -8,9 +8,10 @@ import {
   signOut,
   Unsubscribe
 } from '@angular/fire/auth';
-import {updateProfile, GoogleAuthProvider, PhoneAuthProvider, EmailAuthProvider, User} from 'firebase/auth';
+import {updateProfile, EmailAuthProvider, User} from 'firebase/auth';
 import {Capacitor} from '@capacitor/core';
 import {BehaviorSubject} from 'rxjs';
+import {DatabaseService} from './database.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,7 @@ import {BehaviorSubject} from 'rxjs';
 export class AuthService {
 
   public currentUser: BehaviorSubject<null | User> = new BehaviorSubject<null | User>(null);
-  #verificationId?: string;
+
   #authUnsubscribe: Unsubscribe;
 
   constructor(private auth: Auth, private router: Router) {
@@ -30,10 +31,6 @@ export class AuthService {
   }
 
   //region Get methods
-  getProfilePic(): string {
-    const placeholder = '/assets/Portrait_Placeholder.png';
-    return this.currentUser.value?.photoURL ?? placeholder;
-  }
 
   getDisplayName(): string | undefined {
     return this.currentUser.value?.displayName ?? undefined;
@@ -56,83 +53,38 @@ export class AuthService {
       await signOut(this.auth);
     }
   }
+
   async deleteMyAccount(): Promise<void> {
     await FirebaseAuthentication.deleteUser();
 
     // if (Capacitor.isNativePlatform()) {
     //   await deleteUser();
     // }
+
+    await this.router.navigate(['/login']);
   }
 
-  async forgotPassword(email: string) :Promise<void>{
-    if (this.isLoggedIn()){
-      await this.signOut()
-    }
-    await FirebaseAuthentication.sendPasswordResetEmail({email})
+  async forgotPassword(email: string): Promise<void> {
+    await FirebaseAuthentication.sendPasswordResetEmail({email});
   }
 
-  //region Sign in with email and password
-  async signInWithEmailAndPassword(email: string, password: string): Promise<void> {
-    try {
-      const credential = EmailAuthProvider.credential(email, password);
-      await signInWithCredential(this.auth, credential);
-    } catch (error: any) {
-      if (error.code == 'auth/user-not-found') {
-        await createUserWithEmailAndPassword(this.auth, email, password);
-      }
-    }
-  }
-  //endregion
+  //region Log in with email and password
 
-  //region Sign in with Google
-  async signInWithGoogle(): Promise<void> {
-    // Sign in on the native layer.
-    const {credential} = await FirebaseAuthentication.signInWithGoogle();
-
-    // Sign in on the web layer.
-    // The plug-in only handles the native layer, for PWA this isn't a problem.
-    // However, for native apps this is a problem, as the app is web-based.
-    if (Capacitor.isNativePlatform() && credential?.idToken) {
-      // A credential can be generated for each supported provider,
-      // however, the signature of these methods is varied.
-      // Make sure to check the Firebase JavaScript SDK docs to find the required parameters.
-      // https://firebase.google.com/docs/auth/web/google-signin
-      const newCredential = GoogleAuthProvider.credential(credential?.idToken);
-      await signInWithCredential(this.auth, newCredential);
-    }
-  }
-
-  //endregion
-
-  //region Sign in with phone number
-  /**
-   * The login process for a phone is seperated in 2 part.
-   *  1. A Verification code is send to the user. <-- This method.
-   *  2. The verification code is entered on the website and used to log in.
-   *
-   * @param phoneNumber The phone number to which the verification code must be sent.
-   */
-  async sendPhoneVerificationCode(phoneNumber: string): Promise<void> {
-    const listener = FirebaseAuthentication.addListener('phoneCodeSent', ({verificationId}) => {
-      this.#verificationId = verificationId;
-      listener.remove();
-    });
-    await FirebaseAuthentication.signInWithPhoneNumber({phoneNumber});
-  }
-
-  /**
-   * Authenticate the user through the verification send to his phone number.
-   *
-   * @param verificationCode
-   */
-  async signInWithPhoneNumber(verificationCode: string): Promise<void> {
-    if (!this.#verificationId) {
-      throw new Error(`No valid verificationId found, ensure the sendPhoneVerificationCode method was called first.`);
-    }
-
-    const credential = PhoneAuthProvider.credential(this.#verificationId, verificationCode);
+  async logInWithEmailAndPassword(email: string, password: string): Promise<void> {
+    const credential = EmailAuthProvider.credential(email, password);
     await signInWithCredential(this.auth, credential);
-  };
+  }
+
+  //endregion
+
+  //region Sign up
+  async signUp(email: string, displayName: string, password: string): Promise<User> {
+    const {user} = await createUserWithEmailAndPassword(this.auth, email, password);
+
+    await this.updateDisplayName(`${displayName}`);
+
+    return user
+  }
 
   //endregion
 
@@ -146,12 +98,6 @@ export class AuthService {
     });
   }
 
-  /**
-   * Save the new user as an instance variable, and perform any necessary reroutes.
-   *
-   * @param user The new user.
-   * @private
-   */
   private async setCurrentUser(user: User | null): Promise<void> {
     this.currentUser.next(user);
     if (this.currentUser.value) {

@@ -1,0 +1,32 @@
+<ion-list>
+  <ion-item>
+    <ion-label>Firstname</ion-label>
+    <ion-input type="text" [(ngModel)]="this.firstname"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Lastname</ion-label>
+    <ion-input type="text" [(ngModel)]="this.lastname"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Date of birth</ion-label>
+    <ion-input type="date" [(ngModel)]="this.dob" max="{{ this.maxDate }}" (ionChange)="this.validateDate()"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>E-mail</ion-label>
+    <ion-input type="email" placeholder="email@domain.com" [(ngModel)]="this.email"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Password</ion-label>
+    <ion-input type="password" [(ngModel)]="this.password"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Repeat password</ion-label>
+    <ion-input type="password" [(ngModel)]="this.repeatPassword"></ion-input>
+  </ion-item>
+  <ion-button class="ion-margin-vertical" color="primary" expand="block"
+              (click)="this.validate()">
+    <ion-label class="ion-text-center">Sign up!</ion-label>
+    <ion-icon size="medium" name="send-outline" slot="end"></ion-icon>
+  </ion-button>
+</ion-list>
+<ion-text color="danger">{{this.error}}</ion-text>

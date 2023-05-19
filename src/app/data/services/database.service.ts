@@ -18,7 +18,6 @@ import {
 import {Profile} from '../types/profile';
 import {User} from 'firebase/auth';
 import {Group} from '../types/group';
-import {update} from '@angular/fire/database';
 
 @Injectable({
   providedIn: 'root'
@@ -31,7 +30,7 @@ export class DatabaseService {
     this.userSubscription = this.authService.currentUser.subscribe(u => this.#handleLogIn(u));
   }
 
-  //region LogIn
+  //region Log in
 
   async #isFirstLogIn(user: User): Promise<boolean> {
     const result = await firstValueFrom(
@@ -55,24 +54,26 @@ export class DatabaseService {
     if (!isFirstLogIn && user.displayName) {
       return;
     }
-
-    const newProfile: Profile = {
-      name: user.displayName,
-      id: user.uid,
-      email: user.email/*,
-      firstname,
-      lastname,
-      dob,
-      phoneNumber*/
-    };
-
-    await addDoc<Profile>(
-      this.#getCollectionRef<Profile>('Profiles'),
-      newProfile
-    );
   }
 
   //endregion
+  async createProfile(user: User, dob: string, firstname: string, lastname: string) {
+    if (!user.email) {
+      return;
+    }
+    const newProfile: Profile = {
+      dob,
+      email: user.email,
+      firstname,
+      id: user.uid,
+      lastname
+    };
+
+    await addDoc<Profile>(
+      this.#getCollectionRef<Profile>('profiles'),
+      newProfile
+    );
+  }
 
   //region getRef
 
@@ -134,7 +135,7 @@ export class DatabaseService {
   retrieveMyGroupsList(): Observable<Group[]> {
     return collectionData<Group>(
       query<Group>(
-        this.#getCollectionRef('Groups'),
+        this.#getCollectionRef('groups'),
         where('memberIds', 'array-contains', this.authService.getUserUID())
       ),
       {idField: 'id'}
@@ -142,16 +143,11 @@ export class DatabaseService {
   }
 
   retrieveGroup(groupId: string): Observable<Group> {
-    return docData<Group>(this.#getDocumentRef('Groups', groupId));
+    return docData<Group>(this.#getDocumentRef('groups', groupId));
   }
 
-  retrieveProfile(profileId: string): Observable<Profile[]> {
-    return collectionData<Profile>(
-      query<Profile>(
-        this.#getCollectionRef('Profiles'),
-        where('id', '==', profileId)
-      )
-    );
+  retrieveProfile(profileId: string): Observable<Profile> {
+    return docData<Profile>(this.#getDocumentRef('profiles', profileId));
   }
 
   //endregion

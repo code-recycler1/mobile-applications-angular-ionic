@@ -33,7 +33,6 @@ export class DetailPage implements OnInit {
     if (groupId === null) return;
 
     this.group = this.databaseService.retrieveGroup(groupId);
-    console.log(this.group);
   }
 
   async presentEditMemberAlert(member: Profile): Promise<void> {

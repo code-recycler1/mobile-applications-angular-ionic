@@ -5,25 +5,25 @@ import {Preferences} from '@capacitor/preferences';
   providedIn: 'root'
 })
 export class SettingService {
-  readonly #key = '';
-  readonly #value = '';
+  readonly #key = 'darkTheme';
+  #value = '';
 
   constructor() {
     this.#loadData().then();
   }
 
   async setTheme(): Promise<void> {
+    this.#value = this.#value === 'light' ? 'dark' : 'light';
     await Preferences.set({
-      key: 'theme',
-      value: 'true' ? 'false' : 'true'
+      key: this.#key,
+      value: this.#value
     });
-    console.log(`dark theme: ${this.#value}`);
   }
 
-  async getTheme(): Promise<void> {
-    await Preferences.get({
-      key: this.#key
-    });
+  async getTheme(): Promise<boolean> {
+    const theme = await Preferences.get({ key: this.#key });
+    this.#value = theme?.value ?? '';
+    return this.#value === 'dark';
   }
 
   async #loadData(): Promise<void> {

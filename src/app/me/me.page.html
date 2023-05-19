@@ -6,50 +6,36 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="(this.authService.currentUser | async); let user">
+<ion-content>
 
-  <ion-list lines="full">
-    <ion-item (click)="presentEditProfileAlert()">
-      <ion-icon name="person-circle" slot="start"></ion-icon>
-      <ion-label>{{this.user.displayName}} - 23/09/1991</ion-label>
-      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
-    </ion-item>
-
+  <ion-list *ngIf="this.profile | async as p">
     <ion-item>
-      <ion-icon name="call-outline" slot="start"></ion-icon>
-      <ion-label>Phone number here...</ion-label>
-      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+      <ion-label>Firstname</ion-label>
+      <ion-input type="text" disabled="true" value="{{this.p.firstname}}"></ion-input>
     </ion-item>
-
-    <ion-item (click)="this.authService.forgotPassword(user.email || 'test')">
-      <ion-icon name="key-outline" slot="start"></ion-icon>
-      <ion-label>Reset password</ion-label>
-      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
-    </ion-item>
-
     <ion-item>
-      <ion-icon name="sunny-outline"></ion-icon>
-      <ion-toggle></ion-toggle>
-      <ion-icon name="moon-outline"></ion-icon>
+      <ion-label>Lastname</ion-label>
+      <ion-input type="text" value="{{this.p.lastname}}"></ion-input>
     </ion-item>
-
     <ion-item>
-      <ion-icon name="notifications-off-outline"></ion-icon>
-      <ion-toggle></ion-toggle>
-      <ion-icon name="notifications-outline"></ion-icon>
+      <ion-label>Date of birth</ion-label>
+      <ion-input type="date" value="{{this.p.dob}}"></ion-input>
     </ion-item>
-
-    <!--    <ion-item>
-          <ion-icon name="calendar-clear-outline"></ion-icon>
-          <ion-toggle></ion-toggle>
-          <ion-icon name="calendar-outline"></ion-icon>
-        </ion-item>-->
-
+    <ion-item>
+      <ion-label>E-mail</ion-label>
+      <ion-input type="email" value="{{this.p.email}}"></ion-input>
+    </ion-item>
   </ion-list>
+
+  <ion-item>
+    <ion-icon name="sunny-outline"></ion-icon>
+    <ion-toggle [enableOnOffLabels]="true" (ionChange)="this.setTheme()" [checked]="this.darkTheme"></ion-toggle>
+    <ion-icon name="moon-outline"></ion-icon>
+  </ion-item>
 
 </ion-content>
 
 <ion-footer class="ion-text-center">
-  <ion-button (click)="this.authService.signOut()">Sign out</ion-button>
+  <ion-button (click)="this.signOut()">Sign out</ion-button>
   <ion-button color="danger" (click)="this.presentDeleteAccountAlert()">Delete my account</ion-button>
 </ion-footer>
