@@ -6,28 +6,30 @@ import {Preferences} from '@capacitor/preferences';
 })
 export class SettingService {
   readonly #key = 'darkTheme';
-  #value = '';
 
   constructor() {
     this.#loadData().then();
   }
 
-  async setTheme(): Promise<void> {
-    this.#value = this.#value === 'light' ? 'dark' : 'light';
+  async setTheme(darkTheme: boolean): Promise<void> {
     await Preferences.set({
       key: this.#key,
-      value: this.#value
+      value: darkTheme.toString()
     });
+    this.toggleTheme(darkTheme);
   }
 
-  async getTheme(): Promise<boolean> {
-    const theme = await Preferences.get({ key: this.#key });
-    this.#value = theme?.value ?? '';
-    return this.#value === 'dark';
+  async getTheme(): Promise<string> {
+    const {value} = await Preferences.get({key: this.#key});
+    return value ?? '';
   }
 
   async #loadData(): Promise<void> {
-    await this.getTheme();
+    const darkTheme = await this.getTheme() === 'true';
+    this.toggleTheme(darkTheme);
   }
 
+  private toggleTheme(darkTheme: boolean) {
+    document.body.classList.toggle('dark', darkTheme);
+  }
 }

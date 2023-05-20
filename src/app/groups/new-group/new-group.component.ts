@@ -13,6 +13,7 @@ export class NewGroupComponent implements OnInit {
   name: string = '';
   street: string = '';
   city: string = '';
+  error: string = '';
 
   constructor(private databaseService: DatabaseService,
               public modalCtrl: ModalController) {
@@ -26,6 +27,10 @@ export class NewGroupComponent implements OnInit {
   }
 
   async createGroup(): Promise<void> {
+/*    if (!this.name || !this.street || !this.city) {
+      this.error = 'All fields are required.'
+      return;
+    }*/
     await this.databaseService.createGroup(this.name, this.street, this.city);
     await this.modalCtrl.dismiss();
   }

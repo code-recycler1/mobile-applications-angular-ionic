@@ -57,23 +57,6 @@ export class DatabaseService {
   }
 
   //endregion
-  async createProfile(user: User, dob: string, firstname: string, lastname: string) {
-    if (!user.email) {
-      return;
-    }
-    const newProfile: Profile = {
-      dob,
-      email: user.email,
-      firstname,
-      id: user.uid,
-      lastname
-    };
-
-    await addDoc<Profile>(
-      this.#getCollectionRef<Profile>('profiles'),
-      newProfile
-    );
-  }
 
   //region getRef
 
@@ -123,7 +106,7 @@ export class DatabaseService {
     };
 
     await addDoc<Group>(
-      this.#getCollectionRef<Group>('Groups'),
+      this.#getCollectionRef<Group>('groups'),
       newGroup
     );
   }
@@ -146,10 +129,31 @@ export class DatabaseService {
     return docData<Group>(this.#getDocumentRef('groups', groupId));
   }
 
+  //endregion
+
+  //region ProfileService
+
+  async createProfile(user: User, dob: string, firstname: string, lastname: string) {
+    if (!user.email) {
+      return;
+    }
+    const newProfile: Profile = {
+      dob,
+      email: user.email,
+      firstname,
+      id: user.uid,
+      lastname
+    };
+
+    await addDoc<Profile>(
+      this.#getCollectionRef<Profile>('profiles'),
+      newProfile
+    );
+  }
+
   retrieveProfile(profileId: string): Observable<Profile> {
     return docData<Profile>(this.#getDocumentRef('profiles', profileId));
   }
-
   //endregion
 
   private generateRandomCode(length: number): string {

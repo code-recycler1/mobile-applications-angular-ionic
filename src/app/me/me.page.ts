@@ -14,7 +14,7 @@ import {SettingService} from '../data/services/setting.service';
 export class MePage implements OnInit {
 
   profile!: Observable<Profile>;
-  darkTheme: boolean = false;
+  darkTheme!: boolean;
 
   constructor(private authService: AuthService,
               private alertController: AlertController,
@@ -23,16 +23,15 @@ export class MePage implements OnInit {
   }
 
   ngOnInit(): void {
-    this.setData();
-    this.settingService.getTheme().then(theme => {
-      this.darkTheme = theme;
-    });
+    this.setData().then();
   }
 
-  setData(): void {
-    const uid = this.authService.currentUser.value?.uid;
+  async setData(): Promise<void> {
+    this.darkTheme = await this.settingService.getTheme() === 'true';
 
+    const uid = this.authService.currentUser.value?.uid;
     console.log(uid);
+
     if (!uid) return;
 
     this.profile = this.databaseService.retrieveProfile(uid);
@@ -43,8 +42,9 @@ export class MePage implements OnInit {
     await this.authService.signOut();
   }
 
-  async setTheme(): Promise<void> {
-    await this.settingService.setTheme();
+  async toggleTheme(): Promise<void> {
+    this.darkTheme = !this.darkTheme;
+    await this.settingService.setTheme(this.darkTheme);
   }
 
   async presentDeleteAccountAlert(): Promise<void> {
