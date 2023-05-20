@@ -27,10 +27,10 @@ export class NewGroupComponent implements OnInit {
   }
 
   async createGroup(): Promise<void> {
-/*    if (!this.name || !this.street || !this.city) {
+    if (!this.name || !this.street || !this.city) {
       this.error = 'All fields are required.'
       return;
-    }*/
+    }
     await this.databaseService.createGroup(this.name, this.street, this.city);
     await this.modalCtrl.dismiss();
   }

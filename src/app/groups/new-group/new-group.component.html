@@ -14,7 +14,8 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
-  <ion-item>
+  <ion-text color="danger">{{this.error}}</ion-text>
+  <ion-item class="ion-invalid">
     <ion-label position="floating">Group name</ion-label>
     <ion-input [(ngModel)]="this.name" required="true" [clearInput]="true"></ion-input>
   </ion-item>
