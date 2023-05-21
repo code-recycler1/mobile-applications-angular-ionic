@@ -3,6 +3,7 @@ import {Group} from '../../data/types/group';
 import {Router} from '@angular/router';
 import {AlertController} from '@ionic/angular';
 import {DatabaseService} from '../../data/services/database.service';
+import {AuthService} from '../../data/services/auth.service';
 
 @Component({
   selector: 'app-group-item[group]',
@@ -19,11 +20,21 @@ export class GroupItemComponent implements OnInit {
   constructor(
     public router: Router,
     private alertController: AlertController,
-    private databaseService: DatabaseService) {
+    private databaseService: DatabaseService,
+    private authService: AuthService) {
   }
 
   ngOnInit(): void {
+    this.setData();
+    console.log(this.group.id)
+  }
 
+  setData(): void {
+    if (this.group.ownerId == this.authService.getUserUID()) {
+      this.isGroupOwner = true;
+      return;
+    }
+    this.isGroupOwner = false;
   }
 
   async presentDeleteGroupAlert(): Promise<void> {
@@ -63,7 +74,6 @@ export class GroupItemComponent implements OnInit {
           role: 'confirm',
           handler: async () => {
             if (this.group.id) {
-              //TODO: Add the userId to the leave method to remove the userId from the group.memberIds
               await this.databaseService.leaveGroup(this.group.id);
             }
           },

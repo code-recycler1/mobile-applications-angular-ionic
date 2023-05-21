@@ -8,12 +8,13 @@ import {
   CollectionReference,
   doc,
   DocumentReference,
+  DocumentData,
   Firestore,
   orderBy,
   query,
   deleteDoc,
   updateDoc,
-  where, docData, getDocs
+  where, docData, getDocs, getDoc, WhereFilterOp, Query
 } from '@angular/fire/firestore';
 import {Profile} from '../types/profile';
 import {User} from 'firebase/auth';
@@ -33,13 +34,9 @@ export class DatabaseService {
   //region Log in
 
   async #isFirstLogIn(user: User): Promise<boolean> {
+    const queryRef = this.#createQuery<Profile>('profiles', 'id', '==', user.uid);
     const result = await firstValueFrom(
-      collectionData<Profile>(
-        query<Profile>(
-          this.#getCollectionRef('profiles'),
-          where('id', '==', user.uid)
-        )
-      )
+      collectionData<Profile>(queryRef)
     );
 
     return result.length === 0;
@@ -58,7 +55,7 @@ export class DatabaseService {
 
   //endregion
 
-  //region getRef
+  //region Firestore Methods
 
   /**
    * Retrieve a reference to a specific collection, this is required to retrieve data in that collection.
@@ -84,12 +81,62 @@ export class DatabaseService {
     return doc(this.firestore, `${collectionName}/${id}`) as DocumentReference<T>;
   }
 
+  /**
+   * Creates a Firestore query based on the provided parameters.
+   *
+   * @template T The type of the collection items.
+   * @param {string} collectionName The name of the collection.
+   * @param {string} fieldPath The path to the field you want to query.
+   * @param {WhereFilterOp} opStr The operator for the query (e.g., '==', '<', '>', 'array-contains', etc.).
+   * @param {any} value The value to compare against.
+   * @returns {Query<T>} The Firestore query.
+   */
+  #createQuery<T>(collectionName: string, fieldPath: string, opStr: WhereFilterOp, value: string | undefined): Query<T> {
+    return query<T>(this.#getCollectionRef<T>(collectionName), where(fieldPath, opStr, value));
+  }
+
   //endregion
+
+  //region Helper Methods
+
+  /**
+   * Generates a random code of the specified length.
+   *
+   * @param {number} length The length of the code to generate.
+   * @returns {string} A random code of the specified length.
+   */
+  private generateRandomCode(length: number): string {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  }
+
+  //endregion
+
+  async createEvent(): Promise<void> {
+
+  }
 
   //region GroupService
 
+  /**
+   * Creates a new group with the provided information.
+   *
+   * @param {string} name The name of the group.
+   * @param {string} street The street address of the group.
+   * @param {string} city The city of the group.
+   * @param {string[]} [members=[]] Optional array of member IDs to include in the group.
+   * @returns {Promise<void>} A promise that resolves when the group has been created successfully.
+   * @throws {Error} Throws an error if the user is not logged in.
+   */
+
   async createGroup(name: string, street: string, city: string, members: string[] = []): Promise<void> {
-    const currentUserId = this.authService.currentUser?.value?.uid;
+    console.log('Trying to create a group...');
+    const currentUserId = this.authService.getUserUID();
     if (!currentUserId) {
       throw new Error(`Can't create a new group when not logged in.`);
     }
@@ -111,13 +158,47 @@ export class DatabaseService {
     );
   }
 
-  //TODO: Get the group document where the document id matches the groupId,
-  // remove the this.authService.getUserUID() from the memberIds array
-  async leaveGroup(groupId: string): Promise<void> {
-    const groupDocData = docData<Group>(this.#getDocumentRef('groups', groupId));
+  //TODO: Joingroup method not working yet, the owner of the group / document is the only user that can update
+  async joinGroup(groupCode: string): Promise<void> {
+    console.log('Trying to join a group...');
+    const queryRef = this.#createQuery<Group>('groups', 'code', '==', groupCode);
+    const groupDocs = await firstValueFrom(collectionData<Group>(queryRef));
+
+    if (groupDocs && groupDocs.length > 0) {
+      const groupId = groupDocs[0].id!;
+      const groupDocRef = this.#getDocumentRef('groups', groupId);
+
+      const groupSnapshot = await getDoc(groupDocRef);
+      if (groupSnapshot.exists()) {
+        const groupData = groupSnapshot.data() as Group;
+        const updatedMemberIds = [...(groupData.memberIds || []), this.authService.getUserUID()];
+
+        await updateDoc(groupDocRef, {memberIds: updatedMemberIds});
+      } else {
+        throw new Error('Group not found');
+      }
+    } else {
+      throw new Error('Group not found');
+    }
   }
 
-//Not implemented because of free 20k limit of deleting documents on firebase
+  async leaveGroup(groupId: string): Promise<void> {
+    console.log('Trying to leave a group...');
+    const groupDocRef = this.#getDocumentRef<Group>('groups', groupId);
+
+    const groupSnapshot = await getDoc(groupDocRef);
+    if (groupSnapshot.exists()) {
+      const groupData = groupSnapshot.data();
+      const updatedMemberIds = groupData?.memberIds?.filter(
+        memberId => memberId !== this.authService.getUserUID()
+      );
+
+      await updateDoc(groupDocRef, {memberIds: updatedMemberIds});
+    } else {
+      throw new Error('Group not found');
+    }
+  }
+
   async deleteAllOwnedGroups(): Promise<void> {
     const myGroups = await getDocs(query<Group>(
       this.#getCollectionRef('groups'),
@@ -131,20 +212,21 @@ export class DatabaseService {
 
   //TODO: Add a check to see if the group.ownerId matches the this.authService.getUserUID()
   async deleteGroup(groupId: string): Promise<void> {
+    console.log('Trying to delete a group...');
     await deleteDoc(this.#getDocumentRef('groups', groupId));
   }
 
   retrieveMyGroupsList(): Observable<Group[]> {
-    return collectionData<Group>(
-      query<Group>(
-        this.#getCollectionRef('groups'),
-        where('memberIds', 'array-contains', this.authService.getUserUID())
-      ),
+    console.log('Trying to retrieve my groups...');
+    const queryRef = this.#createQuery<Group>('groups', 'memberIds', 'array-contains', this.authService.getUserUID());
+
+    return collectionData<Group>(queryRef,
       {idField: 'id'}
     );
   }
 
   retrieveGroup(groupId: string): Observable<Group> {
+    console.log('Trying to retrieve a group...');
     return docData<Group>(this.#getDocumentRef('groups', groupId));
   }
 
@@ -152,7 +234,17 @@ export class DatabaseService {
 
   //region ProfileService
 
+  /**
+   * Create a new profile document for the specified user.
+   *
+   * @param user The user for whom the profile is created.
+   * @param dob The date of birth for the profile.
+   * @param firstname The first name for the profile.
+   * @param lastname The last name for the profile.
+   * @returns A promise that resolves when the profile is successfully created.
+   */
   async createProfile(user: User, dob: string, firstname: string, lastname: string) {
+    console.log('Trying to create a new profile...');
     if (!user.email) {
       return;
     }
@@ -170,19 +262,23 @@ export class DatabaseService {
     );
   }
 
-  //TODO: Get the profile document where the profile.id matches the this.authService.getUserUID()
+  /**
+   * Retrieves the profile associated with the current user.
+   * The profile is retrieved by querying the 'profiles' collection where the 'id' field matches the user's ID.
+   * Throws an error if the profile is not found.
+   *
+   * @returns An observable that emits the retrieved profile.
+   * @throws An error if the profile is not found.
+   */
   retrieveProfile(): Observable<Profile> {
-    const queryRef = query<Profile>(
-      this.#getCollectionRef('profiles'),
-      where('id', '==', this.authService.getUserUID()),
-    );
+    console.log('Trying to retrieve my profile...');
+    const queryRef = this.#createQuery<Profile>('profiles', 'id', '==', this.authService.getUserUID());
 
     return collectionData<Profile>(queryRef).pipe(
       map((profiles: Profile[]) => {
         if (profiles.length > 0) {
           return profiles[0];
         } else {
-          console.log(profiles);
           throw new Error('Profile not found');
         }
       })
@@ -191,19 +287,9 @@ export class DatabaseService {
 
   //TODO: Get the profile document where the profile.id matches the this.authService.getUserUID() and delete it
   async deleteMyProfile(): Promise<void> {
-
+    console.log('Trying to delete my profile...');
     // await deleteDoc();
   }
 
   //endregion
-
-  private generateRandomCode(length: number): string {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const charactersLength = characters.length;
-    let result = '';
-    for (let i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-  }
 }

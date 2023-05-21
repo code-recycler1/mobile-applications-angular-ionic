@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {NewGroupComponent} from './new-group/new-group.component';
-import {ModalController} from '@ionic/angular';
+import {AlertController, ModalController} from '@ionic/angular';
 import {AuthService} from '../data/services/auth.service';
 import {DatabaseService} from '../data/services/database.service';
 import {Observable, of} from 'rxjs';
@@ -17,7 +17,8 @@ export class GroupsPage implements OnInit {
 
   constructor(public authService: AuthService,
               private databaseService: DatabaseService,
-              private modalCtrl: ModalController) {
+              private modalCtrl: ModalController,
+              private alertCtrl: AlertController) {
     this.authService.currentUser.subscribe(u => {
       if (u) {
         this.groups = databaseService.retrieveMyGroupsList();
@@ -31,10 +32,43 @@ export class GroupsPage implements OnInit {
 
   }
 
+  /**
+   Displays a new group modal.
+   @returns {Promise<void>} A promise that resolves when the modal is presented.
+   */
   async showNewGroupModal(): Promise<void> {
     const modal = await this.modalCtrl.create({
       component: NewGroupComponent
     });
     return await modal.present();
   }
+
+  async showEnterGroupCodeAlert(): Promise<void> {
+    const alert = await this.alertCtrl.create({
+      header: `Enter code:`,
+      inputs: [{
+        name: 'groupCode',
+        type: 'text',
+      }],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'OK',
+          role: 'confirm',
+          handler: async (data) => {
+            console.log(data);
+            if (data && data.groupCode) {
+              await this.databaseService.joinGroup(data.groupCode);
+            }
+          },
+        },
+      ]
+    });
+
+    await alert.present();
+  }
+
 }

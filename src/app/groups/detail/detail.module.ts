@@ -8,6 +8,7 @@ import { DetailPageRoutingModule } from './detail-routing.module';
 
 import { DetailPage } from './detail.page';
 import {MemberItemComponent} from './member-item/member-item.component';
+import {NewEventComponent} from './new-event/new-event.component';
 
 @NgModule({
   imports: [
@@ -16,6 +17,6 @@ import {MemberItemComponent} from './member-item/member-item.component';
     IonicModule,
     DetailPageRoutingModule,
   ],
-  declarations: [DetailPage, MemberItemComponent]
+  declarations: [DetailPage, MemberItemComponent, NewEventComponent]
 })
 export class DetailPageModule {}

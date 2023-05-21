@@ -44,14 +44,6 @@ export class AuthService {
   }
 
   /**
-   * Retrieves the email of the current user.
-   * @returns {string | undefined} - The email of the current user, or undefined if not available.
-   */
-  getEmail(): string | undefined {
-    return this.currentUser.value?.email ?? undefined;
-  }
-
-  /**
    * Retrieves the UID (unique identifier) of the current user.
    * @returns {string | undefined} - The UID of the current user, or undefined if not available.
    */
@@ -73,6 +65,7 @@ export class AuthService {
     }
   }
 
+  //TODO: Is the if statement necessary?
   /**
    * Deletes the current user account.
    * @returns {Promise<void>} - A promise that resolves when the account deletion process is completed.
@@ -129,7 +122,6 @@ export class AuthService {
   }
 
   //endregion
-
 
   /**
    * Updates the display name of the current user.

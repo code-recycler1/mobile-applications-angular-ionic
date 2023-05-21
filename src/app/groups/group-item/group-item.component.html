@@ -13,6 +13,6 @@
     <ion-label>
       {{group.name}}
     </ion-label>
-    <ion-icon name="ribbon-outline" slot="end"></ion-icon>
+    <ion-icon name="ribbon-outline" slot="end" *ngIf="isGroupOwner"></ion-icon>
   </ion-item>
 </ion-item-sliding>
