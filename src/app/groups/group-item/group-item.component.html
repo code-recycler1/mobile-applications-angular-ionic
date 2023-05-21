@@ -1,9 +1,10 @@
 <ion-item-sliding>
   <ion-item-options side='end'>
-    <ion-item-option *ngIf="isGroupOwner" color='danger'>
+    <ion-item-option *ngIf="isGroupOwner" color='danger'
+                     (click)="this.presentDeleteGroupAlert()">
       <ion-icon slot="icon-only" name='trash'></ion-icon>
     </ion-item-option>
-    <ion-item-option *ngIf="!isGroupOwner">
+    <ion-item-option *ngIf="!isGroupOwner" (click)="this.presentLeaveGroupAlert()">
       <ion-icon slot="icon-only" name="exit-outline"></ion-icon>
     </ion-item-option>
   </ion-item-options>

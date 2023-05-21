@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {ModalController} from '@ionic/angular';
-import {GroupService} from '../../data/services/group.service';
 import {DatabaseService} from '../../data/services/database.service';
 
 @Component({
@@ -12,6 +11,7 @@ export class NewGroupComponent implements OnInit {
 
   name: string = '';
   street: string = '';
+  streetNumber: string = '';
   city: string = '';
   error: string = '';
 
@@ -27,11 +27,13 @@ export class NewGroupComponent implements OnInit {
   }
 
   async createGroup(): Promise<void> {
-    if (!this.name || !this.street || !this.city) {
+    if (!this.name || !this.street || !this.streetNumber|| !this.city) {
       this.error = 'All fields are required.'
       return;
     }
-    await this.databaseService.createGroup(this.name, this.street, this.city);
+    const streetAndNumber = `${this.street} ${this.streetNumber}`
+
+    await this.databaseService.createGroup(this.name, streetAndNumber, this.city);
     await this.modalCtrl.dismiss();
   }
 }

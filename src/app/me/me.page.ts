@@ -12,14 +12,15 @@ import {SettingService} from '../data/services/setting.service';
   styleUrls: ['./me.page.scss'],
 })
 export class MePage implements OnInit {
-
   profile!: Observable<Profile>;
   darkTheme!: boolean;
+  error: string = '';
 
   constructor(private authService: AuthService,
               private alertController: AlertController,
               private databaseService: DatabaseService,
               private settingService: SettingService) {
+
   }
 
   ngOnInit(): void {
@@ -28,14 +29,7 @@ export class MePage implements OnInit {
 
   async setData(): Promise<void> {
     this.darkTheme = await this.settingService.getTheme() === 'true';
-
-    const uid = this.authService.currentUser.value?.uid;
-    console.log(uid);
-
-    if (!uid) return;
-
-    this.profile = this.databaseService.retrieveProfile(uid);
-    console.log(this.profile);
+    this.profile = await this.databaseService.retrieveProfile();
   };
 
   async signOut(): Promise<void> {
@@ -59,8 +53,15 @@ export class MePage implements OnInit {
         {
           text: 'OK',
           role: 'confirm',
-          handler: () => {
-            this.authService.deleteMyAccount();
+          handler: async () => {
+            try {
+              await this.databaseService.deleteMyProfile();
+              await this.authService.deleteMyAccount();
+            } catch (error: any) {
+              if (error.code == 'auth/requires-recent-login') {
+                this.error = 'You\'re log in is outdated, please log in again.';
+              }
+            }
           },
         },
       ]

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {firstValueFrom, Observable, Subscription} from 'rxjs';
+import {firstValueFrom, map, Observable, Subscription} from 'rxjs';
 import {AuthService} from './auth.service';
 import {
   addDoc,
@@ -13,7 +13,7 @@ import {
   query,
   deleteDoc,
   updateDoc,
-  where, docData
+  where, docData, getDocs
 } from '@angular/fire/firestore';
 import {Profile} from '../types/profile';
 import {User} from 'firebase/auth';
@@ -91,7 +91,7 @@ export class DatabaseService {
   async createGroup(name: string, street: string, city: string, members: string[] = []): Promise<void> {
     const currentUserId = this.authService.currentUser?.value?.uid;
     if (!currentUserId) {
-      throw new Error(`Can't create a new channel when not logged in.`);
+      throw new Error(`Can't create a new group when not logged in.`);
     }
 
     const code = this.generateRandomCode(10);
@@ -111,8 +111,27 @@ export class DatabaseService {
     );
   }
 
-  async deleteGroup(group: string, groupId: string): Promise<void> {
-    await deleteDoc(this.#getDocumentRef(group, groupId));
+  //TODO: Get the group document where the document id matches the groupId,
+  // remove the this.authService.getUserUID() from the memberIds array
+  async leaveGroup(groupId: string): Promise<void> {
+    const groupDocData = docData<Group>(this.#getDocumentRef('groups', groupId));
+  }
+
+//Not implemented because of free 20k limit of deleting documents on firebase
+  async deleteAllOwnedGroups(): Promise<void> {
+    const myGroups = await getDocs(query<Group>(
+      this.#getCollectionRef('groups'),
+      where('ownerId', '==', this.authService.getUserUID())
+    ));
+
+    const deletePromises = myGroups.docs.map(group => deleteDoc(group.ref));
+
+    await Promise.all(deletePromises);
+  }
+
+  //TODO: Add a check to see if the group.ownerId matches the this.authService.getUserUID()
+  async deleteGroup(groupId: string): Promise<void> {
+    await deleteDoc(this.#getDocumentRef('groups', groupId));
   }
 
   retrieveMyGroupsList(): Observable<Group[]> {
@@ -151,9 +170,31 @@ export class DatabaseService {
     );
   }
 
-  retrieveProfile(profileId: string): Observable<Profile> {
-    return docData<Profile>(this.#getDocumentRef('profiles', profileId));
+  //TODO: Get the profile document where the profile.id matches the this.authService.getUserUID()
+  retrieveProfile(): Observable<Profile> {
+    const queryRef = query<Profile>(
+      this.#getCollectionRef('profiles'),
+      where('id', '==', this.authService.getUserUID()),
+    );
+
+    return collectionData<Profile>(queryRef).pipe(
+      map((profiles: Profile[]) => {
+        if (profiles.length > 0) {
+          return profiles[0];
+        } else {
+          console.log(profiles);
+          throw new Error('Profile not found');
+        }
+      })
+    );
   }
+
+  //TODO: Get the profile document where the profile.id matches the this.authService.getUserUID() and delete it
+  async deleteMyProfile(): Promise<void> {
+
+    // await deleteDoc();
+  }
+
   //endregion
 
   private generateRandomCode(length: number): string {

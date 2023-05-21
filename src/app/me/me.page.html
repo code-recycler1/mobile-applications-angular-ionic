@@ -8,22 +8,22 @@
 
 <ion-content>
 
-  <ion-list *ngIf="this.profile | async as p">
+  <ion-list *ngIf="this.profile | async as profile">
     <ion-item>
       <ion-label>Firstname</ion-label>
-      <ion-input type="text" disabled="true" value="{{this.p.firstname}}"></ion-input>
+      <ion-input type="text" [disabled]="true" [value]="this.profile.firstname"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label>Lastname</ion-label>
-      <ion-input type="text" value="{{this.p.lastname}}"></ion-input>
+      <ion-input type="text"[disabled]="true" [value]="this.profile.lastname"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label>Date of birth</ion-label>
-      <ion-input type="date" value="{{this.p.dob}}"></ion-input>
+      <ion-input type="date"[disabled]="true" [value]="this.profile.dob"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label>E-mail</ion-label>
-      <ion-input type="email" value="{{this.p.email}}"></ion-input>
+      <ion-input type="email"[disabled]="true" [value]="this.profile.email"></ion-input>
     </ion-item>
   </ion-list>
 
@@ -38,4 +38,5 @@
 <ion-footer class="ion-text-center">
   <ion-button (click)="this.signOut()">Sign out</ion-button>
   <ion-button color="danger" (click)="this.presentDeleteAccountAlert()">Delete my account</ion-button>
+  <ion-text color="danger">{{this.error}}</ion-text>
 </ion-footer>

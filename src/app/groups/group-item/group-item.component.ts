@@ -1,9 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Group} from '../../data/types/group';
-import {ActivatedRoute, Router} from '@angular/router';
-import {GroupService} from '../../data/services/group.service';
-import {ActionSheetController} from '@ionic/angular';
-import {Observable} from 'rxjs';
+import {Router} from '@angular/router';
+import {AlertController} from '@ionic/angular';
+import {DatabaseService} from '../../data/services/database.service';
 
 @Component({
   selector: 'app-group-item[group]',
@@ -17,36 +16,62 @@ export class GroupItemComponent implements OnInit {
 
   isGroupOwner!: boolean;
 
-  constructor(public activatedRoute: ActivatedRoute, public router: Router,
-              private actionSheetCtrl: ActionSheetController) {
+  constructor(
+    public router: Router,
+    private alertController: AlertController,
+    private databaseService: DatabaseService) {
   }
 
   ngOnInit(): void {
-    console.log(this.group);
+
   }
 
-  async presentDeleteGroupActionSheet(groupId: string, name?: string): Promise<void> {
-    const actionSheet = await this.actionSheetCtrl.create({
-      header: `Are you sure you want to delete "${name}"`,
+  async presentDeleteGroupAlert(): Promise<void> {
+    const alert = await this.alertController.create({
+      header: `Are you sure you want to delete ${this.group.name}?`,
+      subHeader: 'This action can\'t be undone!',
       buttons: [
         {
-          text: 'Delete',
-          role: 'destructive',
-          handler: () => {
-            console.log('deleted group');
-          }
+          text: 'Cancel',
+          role: 'cancel'
         },
         {
-          text: 'Cancel',
-          role: 'cancel',
-          data: {
-            action: 'cancel',
+          text: 'OK',
+          role: 'confirm',
+          handler: async () => {
+            if (this.group.id) {
+              await this.databaseService.deleteGroup(this.group.id);
+            }
           },
         },
-      ],
+      ]
     });
 
-    await actionSheet.present();
+    await alert.present();
+  }
+
+  async presentLeaveGroupAlert(): Promise<void> {
+    const alert = await this.alertController.create({
+      header: `Are you sure you want to leave ${this.group.name}?`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'OK',
+          role: 'confirm',
+          handler: async () => {
+            if (this.group.id) {
+              //TODO: Add the userId to the leave method to remove the userId from the group.memberIds
+              await this.databaseService.leaveGroup(this.group.id);
+            }
+          },
+        },
+      ]
+    });
+
+    await alert.present();
   }
 
 }

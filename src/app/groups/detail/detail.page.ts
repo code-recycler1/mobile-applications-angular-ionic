@@ -36,8 +36,24 @@ export class DetailPage implements OnInit {
     console.log(this.group);
   }
 
-  async presentEditMemberAlert(member: Profile): Promise<void> {
-
+  async presentEditMemberActionSheet(member: Profile): Promise<void> {
+    const actionSheet = await this.actionSheetCtrl.create({
+      header: 'Edit member',
+      buttons: [{
+        text: 'Remove from group.',
+        icon: 'trash',
+        handler: () => {
+          // this.databaseService.deleteMember(this.group.id)
+        }
+      },
+        {
+          text: 'Cancel',
+          icon: 'close',
+          role: 'cancel'
+        }
+      ]
+    });
+    await actionSheet.present();
   }
 
   async copyGroupCode(groupCode: string): Promise<void> {
@@ -46,11 +62,16 @@ export class DetailPage implements OnInit {
     });
   }
 
+  //Not implemented yet
   private giveOwnership(userId: string): void {
     console.log(`Gave ownership to ${userId}`);
   }
 
   private deleteMember(userId: string): void {
+
+  }
+
+  deleteGroup() {
 
   }
 }

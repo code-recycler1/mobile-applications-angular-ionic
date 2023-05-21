@@ -28,7 +28,7 @@ export class GroupsPage implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(this.groups);
+
   }
 
   async showNewGroupModal(): Promise<void> {

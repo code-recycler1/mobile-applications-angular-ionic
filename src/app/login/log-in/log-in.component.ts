@@ -8,8 +8,8 @@ import {AuthService} from '../../data/services/auth.service';
 })
 export class LogInComponent implements OnInit {
 
-  email: string = 'bart.simp@groening.com';
-  password: string = 'test123';
+  email: string = 'bart.simp@test.com';
+  password: string = 'test1234';
   error: string = '';
 
   constructor(public authService: AuthService) {

@@ -1,4 +1,4 @@
-<div *ngIf="this.group | async as g">
+<ng-container *ngIf="this.group | async as g">
   <ion-header>
     <ion-toolbar>
       <ion-buttons slot="start">
@@ -8,7 +8,7 @@
         {{g.name}}
       </ion-title>
       <ion-buttons slot="end" *ngIf="isGroupOwner">
-        <ion-button>
+        <ion-button (click)="this.deleteGroup()">
           <ion-icon name="trash"></ion-icon>
         </ion-button>
       </ion-buttons>
@@ -16,7 +16,21 @@
   </ion-header>
 
   <ion-content>
+    <ion-list>
+      <ion-list-header>
+        <ion-label>Info</ion-label>
+      </ion-list-header>
+      <ion-item>
+        <ion-label>
+          <p>{{g.street}} - {{g.city}}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
     <ion-list lines="full">
+      <ion-list-header>
+        <ion-label>Members</ion-label>
+      </ion-list-header>
       <!--    <app-member-item
             *ngFor="let m of this.members" [member]="m" (click)="this.presentEditMemberAlert(m)">
           </app-member-item>-->
@@ -33,4 +47,4 @@
       </ion-button>
     </ion-item>
   </ion-footer>
-</div>
+</ng-container>
