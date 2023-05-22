@@ -9,6 +9,7 @@ import { DetailPageRoutingModule } from './detail-routing.module';
 import { DetailPage } from './detail.page';
 import {MemberItemComponent} from './member-item/member-item.component';
 import {NewEventComponent} from './new-event/new-event.component';
+import {SharedModule} from '../../../shared/shared.module';
 
 @NgModule({
   imports: [
@@ -16,6 +17,7 @@ import {NewEventComponent} from './new-event/new-event.component';
     FormsModule,
     IonicModule,
     DetailPageRoutingModule,
+    SharedModule
   ],
   declarations: [DetailPage, MemberItemComponent, NewEventComponent]
 })

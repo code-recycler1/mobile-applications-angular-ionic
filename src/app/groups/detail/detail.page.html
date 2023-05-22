@@ -7,11 +7,16 @@
       <ion-title>
         {{g.name}}
       </ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="this.showEditGroupModal()" *ngIf="isGroupOwner">
+          <ion-icon name="create-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
   <ion-content>
-    <ion-button (click)="this.showNewEventModal()" expand="block">
+    <ion-button (click)="this.showNewEventModal()" expand="block" *ngIf="isGroupOwner">
       New Event
       <ion-icon name="add-outline" slot="end"></ion-icon>
     </ion-button>

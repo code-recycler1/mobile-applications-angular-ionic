@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActionSheetController} from '@ionic/angular';
+import {EventType} from '../data/types/eventType';
 
 @Component({
   selector: 'app-home',
@@ -7,6 +8,9 @@ import {ActionSheetController} from '@ionic/angular';
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
+
+  eventTypes = Object.values(EventType) as EventType[];
+  selectedEventType = this.eventTypes[0];
 
   constructor(private actionSheetCtrl: ActionSheetController) {
   }

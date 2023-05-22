@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Profile} from '../../../data/types/profile';
-import {GroupService} from '../../../data/services/group.service';
+import {DatabaseService} from '../../../data/services/database.service';
 
 @Component({
   selector: 'app-member-item',
@@ -9,13 +9,14 @@ import {GroupService} from '../../../data/services/group.service';
 })
 export class MemberItemComponent implements OnInit {
 
-  @Input() member!: Profile;
+  @Input()
+  member!: Profile;
 
   isGroupOwner!: boolean;
   isEmpty!: boolean;
 
   //region ctor
-  constructor(public groupService: GroupService) {
+  constructor(public databaseService: DatabaseService) {
   }
 
   //endregion

@@ -6,6 +6,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithCredential,
   signOut,
+  deleteUser,
   Unsubscribe
 } from '@angular/fire/auth';
 import {updateProfile, EmailAuthProvider, User} from 'firebase/auth';
@@ -65,7 +66,6 @@ export class AuthService {
     }
   }
 
-  //TODO: Is the if statement necessary?
   /**
    * Deletes the current user account.
    * @returns {Promise<void>} - A promise that resolves when the account deletion process is completed.
@@ -73,9 +73,12 @@ export class AuthService {
   async deleteMyAccount(): Promise<void> {
     await FirebaseAuthentication.deleteUser();
 
-    // if (Capacitor.isNativePlatform()) {
-    //   await deleteUser();
-    // }
+    if (Capacitor.isNativePlatform()) {
+      const currentUser: User | null = this.currentUser.value;
+      if (currentUser) {
+        await deleteUser(currentUser);
+      }
+    }
 
     await this.router.navigate(['/login']);
   }
@@ -89,8 +92,6 @@ export class AuthService {
     await FirebaseAuthentication.sendPasswordResetEmail({email});
   }
 
-  //region Log in with email and password
-
   /**
    * Logs in a user using their email and password.
    * @param {string} email - The user's email address.
@@ -101,10 +102,6 @@ export class AuthService {
     const credential = EmailAuthProvider.credential(email, password);
     await signInWithCredential(this.auth, credential);
   }
-
-  //endregion
-
-  //region Sign up
 
   /**
    * Creates a new user account with the provided email, display name, and password.
@@ -120,8 +117,6 @@ export class AuthService {
 
     return user;
   }
-
-  //endregion
 
   /**
    * Updates the display name of the current user.

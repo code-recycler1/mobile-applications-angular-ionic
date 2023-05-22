@@ -2,13 +2,13 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Group} from '../../data/types/group';
 import {Profile} from '../../data/types/profile';
-import {ActionSheetController, AlertController, ModalController} from '@ionic/angular';
-import {from, Observable} from 'rxjs';
+import {ActionSheetController, ModalController} from '@ionic/angular';
+import {firstValueFrom, from, Observable, of} from 'rxjs';
 import {DatabaseService} from '../../data/services/database.service';
 import {Clipboard} from '@capacitor/clipboard';
 import {AuthService} from '../../data/services/auth.service';
-import {NewGroupComponent} from '../new-group/new-group.component';
 import {NewEventComponent} from './new-event/new-event.component';
+import {NewGroupComponent} from '../../../shared/new-group/new-group.component';
 
 @Component({
   selector: 'app-detail',
@@ -18,11 +18,12 @@ import {NewEventComponent} from './new-event/new-event.component';
 export class DetailPage implements OnInit {
 
   group!: Observable<Group>;
-  membersObservable: Observable<Profile[]> = from([]);
-  isGroupOwner!: boolean;
+  groupId!: string | null;
+  membersObservable: Observable<Profile[]> = of([]);
+  isGroupOwner: boolean = true;
 
   constructor(public databaseService: DatabaseService,
-              public activatedRoute: ActivatedRoute,
+              private activatedRoute: ActivatedRoute,
               public actionSheetCtrl: ActionSheetController,
               public modalCtrl: ModalController,
               private authService: AuthService) {
@@ -33,11 +34,11 @@ export class DetailPage implements OnInit {
   }
 
   setData(): void {
-    const groupId = this.activatedRoute.snapshot.paramMap.get('id');
+    this.groupId = this.activatedRoute.snapshot.paramMap.get('id');
 
-    if (groupId === null) return;
+    if (this.groupId === null) return;
 
-    this.group = this.databaseService.retrieveGroup(groupId);
+    this.group = this.databaseService.retrieveGroup(this.groupId);
 
     // if (this.group.ownerId == this.authService.getUserUID()) {
     //   this.isGroupOwner = true;
@@ -73,7 +74,7 @@ export class DetailPage implements OnInit {
    * @returns {Promise<void>} A promise that resolves when the group code has been copied to the clipboard successfully.
    */
   async copyGroupCode(groupCode: string): Promise<void> {
-    console.log('Trying to copy the group code...')
+    console.log('Trying to copy the group code...');
     await Clipboard.write({
       string: `${groupCode}`
     });
@@ -87,6 +88,7 @@ export class DetailPage implements OnInit {
   private deleteMember(userId: string): void {
 
   }
+
   //endregion
 
   /**
@@ -97,6 +99,17 @@ export class DetailPage implements OnInit {
   async showNewEventModal(): Promise<void> {
     const modal = await this.modalCtrl.create({
       component: NewEventComponent
+    });
+    return await modal.present();
+  }
+
+  async showEditGroupModal(): Promise<void> {
+    const modal = await this.modalCtrl.create({
+      component: NewGroupComponent,
+      componentProps: {
+        group: await firstValueFrom(this.group),
+        groupId: this.groupId
+      }
     });
     return await modal.present();
   }

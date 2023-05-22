@@ -133,7 +133,6 @@ export class DatabaseService {
    * @returns {Promise<void>} A promise that resolves when the group has been created successfully.
    * @throws {Error} Throws an error if the user is not logged in.
    */
-
   async createGroup(name: string, street: string, city: string, members: string[] = []): Promise<void> {
     console.log('Trying to create a group...');
     const currentUserId = this.authService.getUserUID();
@@ -158,11 +157,37 @@ export class DatabaseService {
     );
   }
 
-  //TODO: Joingroup method not working yet, the owner of the group / document is the only user that can update
+  /**
+   Edits a group with the specified details.
+   @param {string} groupId - The ID of the group to edit.
+   @param {string} name - The new name for the group.
+   @param {string} street - The new street address for the group.
+   @param {string} city - The new city for the group.
+   @returns {Promise<void>} A promise that resolves when the group is successfully edited.
+   @throws {Error} If the group is not found.
+   */
+  async editGroup(groupId: string, name: string, street: string, city: string): Promise<void> {
+    console.log('Trying to edit a group...');
+    const groupDocRef = this.#getDocumentRef<Group>('groups', groupId);
+
+    if (groupDocRef) {
+      await updateDoc(groupDocRef, {name, street, city});
+    } else {
+      throw new Error('Group not found');
+    }
+  }
+
+  /**
+   Joins a group using the specified group code.
+   @param {string} groupCode - The code of the group to join.
+   @returns {Promise<void>} A promise that resolves when the user successfully joins the group.
+   @throws {Error} If the group is not found.
+   */
   async joinGroup(groupCode: string): Promise<void> {
     console.log('Trying to join a group...');
+
     const queryRef = this.#createQuery<Group>('groups', 'code', '==', groupCode);
-    const groupDocs = await firstValueFrom(collectionData<Group>(queryRef));
+    const groupDocs = await firstValueFrom(collectionData<Group>(queryRef, {idField: 'id'}));
 
     if (groupDocs && groupDocs.length > 0) {
       const groupId = groupDocs[0].id!;
@@ -180,8 +205,16 @@ export class DatabaseService {
     } else {
       throw new Error('Group not found');
     }
+
   }
 
+  /**
+   * Leaves a group identified by the given group ID.
+   *
+   * @param {string} groupId - The ID of the group to leave.
+   * @returns {Promise<void>} - A promise that resolves when the operation is complete.
+   * @throws {Error} - Throws an error if the group is not found.
+   */
   async leaveGroup(groupId: string): Promise<void> {
     console.log('Trying to leave a group...');
     const groupDocRef = this.#getDocumentRef<Group>('groups', groupId);
@@ -210,7 +243,12 @@ export class DatabaseService {
     await Promise.all(deletePromises);
   }
 
-  //TODO: Add a check to see if the group.ownerId matches the this.authService.getUserUID()
+  /**
+   * Deletes a group with the given group ID.
+   *
+   * @param {string} groupId - The ID of the group to delete.
+   * @returns {Promise<void>} - A Promise that resolves when the group deletion is complete.
+   */
   async deleteGroup(groupId: string): Promise<void> {
     console.log('Trying to delete a group...');
     await deleteDoc(this.#getDocumentRef('groups', groupId));
@@ -285,10 +323,23 @@ export class DatabaseService {
     );
   }
 
-  //TODO: Get the profile document where the profile.id matches the this.authService.getUserUID() and delete it
+  /**
+   * Deletes the profile of the current user.
+   *
+   * @returns {Promise<void>} - A Promise that resolves when the profile deletion is complete.
+   * @throws {Error} - Throws an error if the user ID is undefined.
+   */
   async deleteMyProfile(): Promise<void> {
     console.log('Trying to delete my profile...');
-    // await deleteDoc();
+
+    const userId = this.authService.getUserUID();
+    if (!userId) {
+      throw new Error('User ID is undefined');
+    }
+
+    const profileRef = this.#getDocumentRef('profiles', userId);
+
+    await deleteDoc(profileRef);
   }
 
   //endregion

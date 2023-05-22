@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {NewGroupComponent} from './new-group/new-group.component';
+import {NewGroupComponent} from '../../shared/new-group/new-group.component';
 import {AlertController, ModalController} from '@ionic/angular';
 import {AuthService} from '../data/services/auth.service';
 import {DatabaseService} from '../data/services/database.service';
