@@ -20,13 +20,13 @@
       New Event
       <ion-icon name="add-outline" slot="end"></ion-icon>
     </ion-button>
-    <ion-list>
+    <ion-list lines="full">
       <ion-list-header>
         <ion-label>Info</ion-label>
       </ion-list-header>
       <ion-item>
         <ion-label>
-          <p>{{g.street}} - {{g.city}}</p>
+          {{g.street}} - {{g.city}}
         </ion-label>
       </ion-item>
     </ion-list>
@@ -44,10 +44,9 @@
 
   <ion-footer>
     <ion-item lines="full">
-      <ion-label>Invite new members:</ion-label>
-      <ion-input value="{{g.code}}"></ion-input>
+      <ion-label>Invite new members: {{g.code}}</ion-label>
       <ion-button (click)="this.copyGroupCode(g.code)">
-        <ion-icon name="copy-outline"></ion-icon>
+        Copy&nbsp;<ion-icon name="copy-outline"></ion-icon>
       </ion-button>
     </ion-item>
   </ion-footer>

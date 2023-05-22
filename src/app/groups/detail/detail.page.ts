@@ -3,7 +3,7 @@ import {ActivatedRoute} from '@angular/router';
 import {Group} from '../../data/types/group';
 import {Profile} from '../../data/types/profile';
 import {ActionSheetController, ModalController} from '@ionic/angular';
-import {firstValueFrom, from, Observable, of} from 'rxjs';
+import {firstValueFrom, Observable, of} from 'rxjs';
 import {DatabaseService} from '../../data/services/database.service';
 import {Clipboard} from '@capacitor/clipboard';
 import {AuthService} from '../../data/services/auth.service';
@@ -82,7 +82,7 @@ export class DetailPage implements OnInit {
 
   //region Not implemented
   private giveOwnership(userId: string): void {
-    console.log(`Gave ownership to ${userId}`);
+
   }
 
   private deleteMember(userId: string): void {

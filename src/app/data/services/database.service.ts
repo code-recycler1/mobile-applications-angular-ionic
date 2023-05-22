@@ -117,9 +117,20 @@ export class DatabaseService {
 
   //endregion
 
+  //region EventService
+
   async createEvent(): Promise<void> {
 
   }
+
+  async editEvent(): Promise<void> {
+
+  }
+  async deleteEvent(): Promise<void> {
+
+  }
+
+  //endregion
 
   //region GroupService
 
