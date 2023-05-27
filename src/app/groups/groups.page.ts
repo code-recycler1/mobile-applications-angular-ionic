@@ -48,8 +48,9 @@ export class GroupsPage implements OnInit {
       header: `Enter code:`,
       inputs: [{
         name: 'groupCode',
-        type: 'text',
+        type: 'text'
       }],
+      message: '',
       buttons: [
         {
           text: 'Cancel',
@@ -59,13 +60,16 @@ export class GroupsPage implements OnInit {
           text: 'OK',
           role: 'confirm',
           handler: async (data) => {
-            console.log(data);
-            if (data && data.groupCode) {
+            try {
               await this.databaseService.joinGroup(data.groupCode);
+              return true;
+            } catch (error) {
+              alert.message = 'Group not found';
+              return false;
             }
           },
         },
-      ]
+      ],
     });
 
     await alert.present();

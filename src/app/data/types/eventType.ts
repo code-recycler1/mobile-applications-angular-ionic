@@ -1,5 +1,5 @@
 export enum EventType {
   competition = 'Competition',
   friendly = 'Friendly',
-  trainingSession = 'Training'
+  trainingSession = 'Training Session'
 }

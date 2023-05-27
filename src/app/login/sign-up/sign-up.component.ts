@@ -37,6 +37,8 @@ export class SignUpComponent implements OnInit {
     if (selectedDate > currentDate || selectedDate > ageLimitDate) {
       this.dob = '';
       this.error = 'You must be at least 16.';
+    } else {
+      this.error = '';
     }
   }
 

@@ -19,6 +19,7 @@ import {
 import {Profile} from '../types/profile';
 import {User} from 'firebase/auth';
 import {Group} from '../types/group';
+import {Event} from '../types/event';
 
 @Injectable({
   providedIn: 'root'
@@ -119,13 +120,44 @@ export class DatabaseService {
 
   //region EventService
 
-  async createEvent(): Promise<void> {
+  async createEvent(groupId: string, group: string, opponent: string, atHome: boolean, address: string, type: string, date: string): Promise<void> {
+    console.log('Trying to create a event...');
+    const currentUserId = this.authService.getUserUID();
+    if (!currentUserId) {
+      throw new Error(`Can't create a new group when not logged in.`);
+    }
 
+    const groupDocRef = this.#getDocumentRef<Group>('groups', groupId);
+    const groupSnapshot = await getDoc(groupDocRef);
+    const memberIds: string[] = [];
+    if (groupSnapshot.exists()) {
+      const groupDataMemberIds = groupSnapshot.data()?.memberIds;
+      if (groupDataMemberIds) {
+        memberIds.push(...groupDataMemberIds);
+      }
+    }
+
+    const newEvent: Event = {
+      home: atHome ? group : opponent,
+      away: atHome ? opponent : group,
+      address,
+      type,
+      date,
+      yes: [],
+      maybe: memberIds,
+      no: []
+    };
+
+    await addDoc<Event>(
+      this.#getCollectionRef<Event>('events'),
+      newEvent
+    );
   }
 
   async editEvent(): Promise<void> {
 
   }
+
   async deleteEvent(): Promise<void> {
 
   }
@@ -144,7 +176,7 @@ export class DatabaseService {
    * @returns {Promise<void>} A promise that resolves when the group has been created successfully.
    * @throws {Error} Throws an error if the user is not logged in.
    */
-  async createGroup(name: string, street: string, city: string, members: string[] = []): Promise<void> {
+  async createGroup(name: string, street: string, city: string): Promise<void> {
     console.log('Trying to create a group...');
     const currentUserId = this.authService.getUserUID();
     if (!currentUserId) {
@@ -159,7 +191,7 @@ export class DatabaseService {
       city,
       code,
       ownerId: currentUserId,
-      memberIds: [...members, currentUserId]
+      memberIds: [currentUserId]
     };
 
     await addDoc<Group>(
@@ -227,7 +259,6 @@ export class DatabaseService {
    * @throws {Error} - Throws an error if the group is not found.
    */
   async leaveGroup(groupId: string): Promise<void> {
-    console.log('Trying to leave a group...');
     const groupDocRef = this.#getDocumentRef<Group>('groups', groupId);
 
     const groupSnapshot = await getDoc(groupDocRef);
@@ -261,7 +292,6 @@ export class DatabaseService {
    * @returns {Promise<void>} - A Promise that resolves when the group deletion is complete.
    */
   async deleteGroup(groupId: string): Promise<void> {
-    console.log('Trying to delete a group...');
     await deleteDoc(this.#getDocumentRef('groups', groupId));
   }
 
@@ -275,7 +305,6 @@ export class DatabaseService {
   }
 
   retrieveGroup(groupId: string): Observable<Group> {
-    console.log('Trying to retrieve a group...');
     return docData<Group>(this.#getDocumentRef('groups', groupId));
   }
 

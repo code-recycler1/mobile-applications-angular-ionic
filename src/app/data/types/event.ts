@@ -1,10 +1,11 @@
 export interface Event {
-  id: number;
-  home: string;
+  id?: number;
+  home?: string;
   away?: string;
-  date: string;
+  address?: string;
   type: string;
-  yes?: string[];
-  maybe: string[];
-  no?: string[];
+  date: string;
+    yes?: string[];
+    maybe: string[];
+    no?: string[];
 }

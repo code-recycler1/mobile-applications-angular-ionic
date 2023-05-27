@@ -38,6 +38,9 @@
       <!--    <app-member-item
             *ngFor="let m of this.members" [member]="m" (click)="this.presentEditMemberAlert(m)">
           </app-member-item>-->
+      <ion-item *ngFor="let m of this.g.memberIds">
+        <ion-label>{{m}}</ion-label>
+      </ion-item>
     </ion-list>
 
   </ion-content>

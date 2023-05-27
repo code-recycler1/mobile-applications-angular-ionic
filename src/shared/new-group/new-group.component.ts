@@ -2,7 +2,6 @@ import {Component, Input, OnInit} from '@angular/core';
 import {ModalController} from '@ionic/angular';
 import {DatabaseService} from '../../app/data/services/database.service';
 import {Group} from '../../app/data/types/group';
-import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-new-group',
@@ -21,13 +20,11 @@ export class NewGroupComponent implements OnInit {
   error: string = '';
 
   constructor(private databaseService: DatabaseService,
-              public modalCtrl: ModalController,
-              private activatedRoute: ActivatedRoute,) {
+              public modalCtrl: ModalController) {
   }
 
   ngOnInit(): void {
     if (this.group) {
-      console.log(this.groupId);
       this.name = this.group.name;
       this.street = this.group.street;
       this.city = this.group.city;

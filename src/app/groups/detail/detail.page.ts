@@ -19,6 +19,7 @@ export class DetailPage implements OnInit {
 
   group!: Observable<Group>;
   groupId!: string | null;
+  groupName!: string | null;
   membersObservable: Observable<Profile[]> = of([]);
   isGroupOwner: boolean = true;
 
@@ -39,7 +40,6 @@ export class DetailPage implements OnInit {
     if (this.groupId === null) return;
 
     this.group = this.databaseService.retrieveGroup(this.groupId);
-
     // if (this.group.ownerId == this.authService.getUserUID()) {
     //   this.isGroupOwner = true;
     //   return;
@@ -98,7 +98,11 @@ export class DetailPage implements OnInit {
    */
   async showNewEventModal(): Promise<void> {
     const modal = await this.modalCtrl.create({
-      component: NewEventComponent
+      component: NewEventComponent,
+      componentProps:{
+        groupId: this.groupId,
+        groupName: await firstValueFrom(this.group).then(g => g.name),
+      }
     });
     return await modal.present();
   }
