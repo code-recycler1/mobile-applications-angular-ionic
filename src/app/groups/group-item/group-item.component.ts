@@ -26,7 +26,6 @@ export class GroupItemComponent implements OnInit {
 
   ngOnInit(): void {
     this.setData();
-    console.log(this.group.id)
   }
 
   setData(): void {

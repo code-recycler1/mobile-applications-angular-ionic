@@ -11,15 +11,16 @@
     <ion-list-header>
       <ion-label>Events</ion-label>
       <ion-select aria-label="events" interface="popover"
-                  [(ngModel)]="this.selectedEventType">
+                  [(ngModel)]="this.selectedEventType" class="ion-padding-end"
+                  (ionChange)="onEventTypeChange()">
         <ion-select-option *ngFor='let e of this.eventTypes' [value]="e">
           {{e}}
         </ion-select-option>
       </ion-select>
     </ion-list-header>
 
-    <app-event-item>
-
+    <app-event-item
+      *ngFor="let e of filteredEvents | async" [event]="e">
     </app-event-item>
 
   </ion-list>

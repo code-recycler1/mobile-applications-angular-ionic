@@ -14,7 +14,7 @@ import {
   query,
   deleteDoc,
   updateDoc,
-  where, docData, getDocs, getDoc, WhereFilterOp, Query
+  where, docData, getDocs, getDoc, WhereFilterOp, Query, Timestamp
 } from '@angular/fire/firestore';
 import {Profile} from '../types/profile';
 import {User} from 'firebase/auth';
@@ -120,7 +120,8 @@ export class DatabaseService {
 
   //region EventService
 
-  async createEvent(groupId: string, group: string, opponent: string, atHome: boolean, address: string, type: string, date: string): Promise<void> {
+  async createEvent(groupId: string, group: string, opponent: string, atHome: boolean,
+                    address: string, type: string, date: string): Promise<void> {
     console.log('Trying to create a event...');
     const currentUserId = this.authService.getUserUID();
     if (!currentUserId) {
@@ -136,13 +137,14 @@ export class DatabaseService {
         memberIds.push(...groupDataMemberIds);
       }
     }
+    const dateTimestamp = Timestamp.fromDate(new Date(date));
 
     const newEvent: Event = {
       home: atHome ? group : opponent,
       away: atHome ? opponent : group,
       address,
       type,
-      date,
+      date: dateTimestamp,
       yes: [],
       maybe: memberIds,
       no: []
@@ -158,9 +160,56 @@ export class DatabaseService {
 
   }
 
-  async deleteEvent(): Promise<void> {
-
+  async deleteEvent(eventId: string): Promise<void> {
+    await deleteDoc(this.#getDocumentRef('events', eventId));
   }
+
+  retrieveMyEventsList(): Observable<Event[]> {
+    const userId = this.authService.getUserUID();
+
+    const queryRef = this.#getCollectionRef<Event>('events');
+    where('maybe', 'array-contains', userId);
+    where('yes', 'array-contains', userId);
+    where('no', 'array-contains', userId);
+    orderBy('date', 'asc');
+
+    return collectionData<Event>(queryRef, {idField: 'id'});
+  }
+
+  async updateAttendance(eventId: string, attendance: string): Promise<void> {
+    const eventDocRef = this.#getDocumentRef<Event>('events', eventId);
+    const eventSnapshot = await getDoc(eventDocRef);
+
+    if (eventSnapshot.exists()) {
+      const event = eventSnapshot.data() as Event;
+
+      const currentUserId = this.authService.getUserUID();
+      if (!currentUserId) {
+        throw new Error(`Can't update attendance when not logged in.`);
+      }
+
+      const { yes, maybe, no } = event;
+
+      const updatedYes = yes?.filter(userId => userId !== currentUserId);
+      const updatedMaybe = maybe.filter(userId => userId !== currentUserId);
+      const updatedNo = no?.filter(userId => userId !== currentUserId);
+
+      if (attendance === 'yes') {
+        updatedYes?.push(currentUserId);
+      } else if (attendance === 'maybe') {
+        updatedMaybe.push(currentUserId);
+      } else if (attendance === 'no') {
+        updatedNo?.push(currentUserId);
+      }
+
+      await updateDoc(eventDocRef, {
+        yes: updatedYes,
+        maybe: updatedMaybe,
+        no: updatedNo
+      });
+    }
+  }
+
 
   //endregion
 
@@ -227,8 +276,6 @@ export class DatabaseService {
    @throws {Error} If the group is not found.
    */
   async joinGroup(groupCode: string): Promise<void> {
-    console.log('Trying to join a group...');
-
     const queryRef = this.#createQuery<Group>('groups', 'code', '==', groupCode);
     const groupDocs = await firstValueFrom(collectionData<Group>(queryRef, {idField: 'id'}));
 
@@ -296,7 +343,6 @@ export class DatabaseService {
   }
 
   retrieveMyGroupsList(): Observable<Group[]> {
-    console.log('Trying to retrieve my groups...');
     const queryRef = this.#createQuery<Group>('groups', 'memberIds', 'array-contains', this.authService.getUserUID());
 
     return collectionData<Group>(queryRef,
@@ -349,7 +395,6 @@ export class DatabaseService {
    * @throws An error if the profile is not found.
    */
   retrieveProfile(): Observable<Profile> {
-    console.log('Trying to retrieve my profile...');
     const queryRef = this.#createQuery<Profile>('profiles', 'id', '==', this.authService.getUserUID());
 
     return collectionData<Profile>(queryRef).pipe(

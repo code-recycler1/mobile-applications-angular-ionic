@@ -1,6 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {ActionSheetController} from '@ionic/angular';
 import {EventType} from '../data/types/eventType';
+import {Observable, of, map, switchMap, from, filter, toArray} from 'rxjs';
+import {Event} from '../data/types/event';
+import {DatabaseService} from '../data/services/database.service';
+import {AuthService} from '../data/services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -9,28 +12,39 @@ import {EventType} from '../data/types/eventType';
 })
 export class HomePage implements OnInit {
 
-  eventTypes = Object.values(EventType) as EventType[];
+  eventTypes = ['All', ...Object.values(EventType)] as EventType[];
   selectedEventType = this.eventTypes[0];
 
-  constructor(private actionSheetCtrl: ActionSheetController) {
+  allEvents: Observable<Event[]> = of([]);
+  filteredEvents: Observable<Event[]> = of([]);
+
+  constructor(public authService: AuthService, private databaseService: DatabaseService) {
+    this.authService.currentUser.subscribe(u => {
+      if (u) {
+        this.allEvents = this.databaseService.retrieveMyEventsList();
+        this.filteredEvents = this.allEvents;
+      } else {
+        this.allEvents = of([]);
+      }
+    });
   }
 
   ngOnInit(): void {
+    this.filterEventsByType();
   }
 
-  async presentActionSheet() {
-    const actionSheet = await this.actionSheetCtrl.create({
-      header: 'New',
-      buttons: [
-        {
-          text: 'Event',
-          data: {
-            action: 'share',
-          },
-        },
-      ],
-    });
+  onEventTypeChange(): void {
+    this.filterEventsByType();
+  }
 
-    await actionSheet.present();
+  filterEventsByType(): void {
+    if (this.selectedEventType == this.eventTypes[0]) {
+      this.filteredEvents = this.allEvents;
+    } else {
+      this.filteredEvents = this.allEvents.pipe(
+        map(events => events.filter(event => event.type === this.selectedEventType))
+      );
+    }
   }
 }
+

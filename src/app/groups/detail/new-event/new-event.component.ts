@@ -40,16 +40,17 @@ export class NewEventComponent implements OnInit {
 
   async createEvent(): Promise<void> {
     if (this.groupId == null) return;
-    if (!this.date) {
-      this.error = 'Please select a date.';
-      return;
-    }
 
-    if (this.selectedEventType !== EventType.trainingSession || !this.atHome) {
-      if (!this.opponent || !this.address) {
+    if (this.selectedEventType !== EventType.trainingSession) {
+      if (!this.opponent || !this.address && !this.atHome) {
         this.error = 'All fields are required.';
         return;
       }
+    }
+
+    if (!this.date) {
+      this.error = 'Please select a date.';
+      return;
     }
 
     await this.databaseService.createEvent(this.groupId, this.groupName, this.opponent, this.atHome, this.address, this.selectedEventType.toString(), this.date);

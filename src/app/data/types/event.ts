@@ -1,11 +1,13 @@
+import {Timestamp} from '@angular/fire/firestore';
+
 export interface Event {
-  id?: number;
+  id?: string;
   home?: string;
   away?: string;
   address?: string;
   type: string;
-  date: string;
-    yes?: string[];
-    maybe: string[];
-    no?: string[];
+  date: Timestamp;
+  yes?: string[];
+  maybe: string[];
+  no?: string[];
 }

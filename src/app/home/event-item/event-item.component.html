@@ -1,35 +1,18 @@
-<ion-card>
+<ion-card [color]="this.getCardColor()" (click)="this.showChangeAttendanceActionSheet()">
   <ion-card-header>
-    <ion-card-title>Holy Guacamole - Snack Attackers</ion-card-title>
-    <ion-card-subtitle>15/04/2023 at 15:00</ion-card-subtitle>
+    <ion-card-subtitle>{{event.type}}</ion-card-subtitle>
+    <ion-card-title>{{ this.eventTitle }}</ion-card-title>
+    <ion-card-subtitle>{{this.date}} at {{this.time}}</ion-card-subtitle>
   </ion-card-header>
 
   <ion-card-content>
     <ion-icon name="checkmark-circle-outline"></ion-icon>
-    1
+    {{event.yes?.length}}
     |
     <ion-icon name="help-circle-outline"></ion-icon>
-    13
+    {{event.maybe.length}}
     |
     <ion-icon name="close-circle-outline"></ion-icon>
-    2
-  </ion-card-content>
-</ion-card>
-
-<ion-card>
-  <ion-card-header>
-    <ion-card-title>Not Fast, Just Furious - Holy Guacamole</ion-card-title>
-    <ion-card-subtitle>22/04/2023 at 13:30</ion-card-subtitle>
-  </ion-card-header>
-
-  <ion-card-content>
-    <ion-icon name="checkmark-circle-outline"></ion-icon>
-    4
-    |
-    <ion-icon name="help-circle-outline"></ion-icon>
-    10
-    |
-    <ion-icon name="close-circle-outline"></ion-icon>
-    2
+    {{event.no?.length}}
   </ion-card-content>
 </ion-card>

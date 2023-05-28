@@ -21,7 +21,7 @@ export class GroupsPage implements OnInit {
               private alertCtrl: AlertController) {
     this.authService.currentUser.subscribe(u => {
       if (u) {
-        this.groups = databaseService.retrieveMyGroupsList();
+        this.groups = this.databaseService.retrieveMyGroupsList();
       } else {
         this.groups = of([]);
       }
