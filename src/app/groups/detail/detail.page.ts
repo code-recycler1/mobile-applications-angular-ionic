@@ -46,6 +46,7 @@ export class DetailPage implements OnInit {
 
     this.group.subscribe((group: Group) => {
       if (group.memberIds?.includes(currentUserId)) {
+        this.isPartOfGroup = true;
         this.isGroupOwner = group.ownerId === currentUserId;
       } else {
         this.isPartOfGroup = false;
