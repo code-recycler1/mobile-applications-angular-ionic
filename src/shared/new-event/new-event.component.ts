@@ -1,7 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {DatabaseService} from '../../../data/services/database.service';
+import {DatabaseService} from '../../app/data/services/database.service';
 import {ModalController} from '@ionic/angular';
 import {EventType} from 'src/app/data/types/eventType';
+import {Event} from '../../app/data/types/event';
 
 @Component({
   selector: 'app-new-event',
@@ -12,6 +13,10 @@ export class NewEventComponent implements OnInit {
   eventTypes = Object.values(EventType) as EventType[];
   selectedEventType: EventType = this.eventTypes[0];
 
+  @Input()
+  event?: Event = undefined;
+  @Input()
+  eventId?: string;
   @Input()
   groupId?: string;
   @Input()
@@ -32,6 +37,7 @@ export class NewEventComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
   }
 
   async cancel(): Promise<void> {

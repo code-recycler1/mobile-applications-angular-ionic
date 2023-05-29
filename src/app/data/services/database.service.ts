@@ -8,7 +8,6 @@ import {
   CollectionReference,
   doc,
   DocumentReference,
-  DocumentData,
   Firestore,
   orderBy,
   query,
@@ -34,6 +33,13 @@ export class DatabaseService {
 
   //region Log in
 
+  /**
+   * Checks if the user is logging in for the first time.
+   *
+   * @private
+   * @param {User} user - The user object.
+   * @returns {Promise<boolean>} A Promise that resolves to a boolean indicating whether it is the user's first login.
+   */
   async #isFirstLogIn(user: User): Promise<boolean> {
     const queryRef = this.#createQuery<Profile>('profiles', 'id', '==', user.uid);
     const result = await firstValueFrom(
@@ -43,6 +49,13 @@ export class DatabaseService {
     return result.length === 0;
   }
 
+  /**
+   * Handles the login process for the user.
+   *
+   * @private
+   * @param {User | null} user - The user object or null if no user is logged in.
+   * @returns {Promise<void>} A Promise that resolves once the login process is handled.
+   */
   async #handleLogIn(user: User | null): Promise<void> {
     if (!user || !user?.displayName || !user?.email || !user?.photoURL) {
       return;
@@ -120,9 +133,21 @@ export class DatabaseService {
 
   //region EventService
 
+  /**
+   * Creates a new event for a group.
+   *
+   * @param {string} groupId - The ID of the group.
+   * @param {string} group - The name of the group.
+   * @param {string} opponent - The name of the opponent.
+   * @param {boolean} atHome - A boolean indicating if the event is held at home.
+   * @param {string} address - The address of the event.
+   * @param {string} type - The type of the event.
+   * @param {string} date - The date of the event in string format.
+   * @returns {Promise<void>} A Promise that resolves once the event is created.
+   * @throws {Error} Throws an error if the user is not logged in.
+   */
   async createEvent(groupId: string, group: string, opponent: string, atHome: boolean,
                     address: string, type: string, date: string): Promise<void> {
-    console.log('Trying to create a event...');
     const currentUserId = this.authService.getUserUID();
     if (!currentUserId) {
       throw new Error(`Can't create a new group when not logged in.`);
@@ -140,14 +165,17 @@ export class DatabaseService {
     const dateTimestamp = Timestamp.fromDate(new Date(date));
 
     const newEvent: Event = {
+      groupId: groupId,
+      ownerId: currentUserId,
       home: atHome ? group : opponent,
       away: atHome ? opponent : group,
       address,
       type,
       date: dateTimestamp,
       yes: [],
-      maybe: memberIds,
-      no: []
+      maybe: [],
+      no: [],
+      allUsers: memberIds
     };
 
     await addDoc<Event>(
@@ -157,25 +185,44 @@ export class DatabaseService {
   }
 
   async editEvent(): Promise<void> {
-
+//Not implemented
   }
 
+  /**
+   * Deletes an event by its ID.
+   *
+   * @param {string} eventId - The ID of the event to delete.
+   * @returns {Promise<void>} A Promise that resolves once the event is deleted.
+   */
   async deleteEvent(eventId: string): Promise<void> {
     await deleteDoc(this.#getDocumentRef('events', eventId));
   }
 
+  /**
+   * Retrieves a list of events for the current user.
+   *
+   * @returns {Observable<Event[]>} An Observable that emits an array of events belonging to the current user.
+   */
   retrieveMyEventsList(): Observable<Event[]> {
-    const userId = this.authService.getUserUID();
+    const currentUserId = this.authService.getUserUID();
 
-    const queryRef = this.#getCollectionRef<Event>('events');
-    where('maybe', 'array-contains', userId);
-    where('yes', 'array-contains', userId);
-    where('no', 'array-contains', userId);
-    orderBy('date', 'asc');
-
-    return collectionData<Event>(queryRef, {idField: 'id'});
+    const eventsCollection = this.#getCollectionRef<Event>('events');
+    const myEventsQuery = query(
+      eventsCollection,
+      where('allUsers', 'array-contains', currentUserId),
+      orderBy('date', 'asc')
+    );
+    return collectionData(myEventsQuery, {idField: 'id'});
   }
 
+  /**
+   * Updates the attendance status for a specific event.
+   *
+   * @param {string} eventId - The ID of the event.
+   * @param {string} attendance - The attendance status ('yes', 'maybe', or 'no').
+   * @returns {Promise<void>} A Promise that resolves once the attendance is updated.
+   * @throws {Error} Throws an error if the user is not logged in.
+   */
   async updateAttendance(eventId: string, attendance: string): Promise<void> {
     const eventDocRef = this.#getDocumentRef<Event>('events', eventId);
     const eventSnapshot = await getDoc(eventDocRef);
@@ -188,7 +235,7 @@ export class DatabaseService {
         throw new Error(`Can't update attendance when not logged in.`);
       }
 
-      const { yes, maybe, no } = event;
+      const {yes, maybe, no} = event;
 
       const updatedYes = yes?.filter(userId => userId !== currentUserId);
       const updatedMaybe = maybe.filter(userId => userId !== currentUserId);
@@ -221,12 +268,10 @@ export class DatabaseService {
    * @param {string} name The name of the group.
    * @param {string} street The street address of the group.
    * @param {string} city The city of the group.
-   * @param {string[]} [members=[]] Optional array of member IDs to include in the group.
    * @returns {Promise<void>} A promise that resolves when the group has been created successfully.
    * @throws {Error} Throws an error if the user is not logged in.
    */
   async createGroup(name: string, street: string, city: string): Promise<void> {
-    console.log('Trying to create a group...');
     const currentUserId = this.authService.getUserUID();
     if (!currentUserId) {
       throw new Error(`Can't create a new group when not logged in.`);
@@ -259,7 +304,6 @@ export class DatabaseService {
    @throws {Error} If the group is not found.
    */
   async editGroup(groupId: string, name: string, street: string, city: string): Promise<void> {
-    console.log('Trying to edit a group...');
     const groupDocRef = this.#getDocumentRef<Group>('groups', groupId);
 
     if (groupDocRef) {
@@ -368,7 +412,6 @@ export class DatabaseService {
    * @returns A promise that resolves when the profile is successfully created.
    */
   async createProfile(user: User, dob: string, firstname: string, lastname: string) {
-    console.log('Trying to create a new profile...');
     if (!user.email) {
       return;
     }

@@ -1,8 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AlertController} from '@ionic/angular';
 import {AuthService} from '../data/services/auth.service';
 import {Profile} from '../data/types/profile';
-import {Observable} from 'rxjs';
+import {Observable, of, Subscription} from 'rxjs';
 import {DatabaseService} from '../data/services/database.service';
 import {SettingService} from '../data/services/setting.service';
 
@@ -11,10 +11,11 @@ import {SettingService} from '../data/services/setting.service';
   templateUrl: './me.page.html',
   styleUrls: ['./me.page.scss'],
 })
-export class MePage implements OnInit {
-  profile!: Observable<Profile>;
+export class MePage implements OnInit, OnDestroy {
+  profile!: Observable<Profile | null>;
   darkTheme!: boolean;
   error: string = '';
+  authSubscription!: Subscription;
 
   constructor(private authService: AuthService,
               private alertController: AlertController,
@@ -24,12 +25,22 @@ export class MePage implements OnInit {
   }
 
   ngOnInit(): void {
-    this.setData().then();
+    this.authSubscription = this.authService.currentUser.subscribe((user) => {
+      if (user) {
+        this.setData().then();
+      } else {
+        this.profile = of(null);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.authSubscription.unsubscribe();
   }
 
   async setData(): Promise<void> {
     this.darkTheme = await this.settingService.getTheme() === 'true';
-    this.profile = await this.databaseService.retrieveProfile();
+    this.profile = this.databaseService.retrieveProfile();
   };
 
   async signOut(): Promise<void> {

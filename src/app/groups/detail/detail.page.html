@@ -5,7 +5,7 @@
         <ion-back-button defaultHref="/"></ion-back-button>
       </ion-buttons>
       <ion-title>
-        {{g.name}}
+        {{this.isPartOfGroup ? g.name : 'Membership error'}}
       </ion-title>
       <ion-buttons slot="end">
         <ion-button (click)="this.showEditGroupModal()" *ngIf="isGroupOwner">
@@ -15,7 +15,7 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-content>
+  <ion-content *ngIf="this.isPartOfGroup">
     <ion-button (click)="this.showNewEventModal()" expand="block" *ngIf="isGroupOwner">
       New Event
       <ion-icon name="add-outline" slot="end"></ion-icon>

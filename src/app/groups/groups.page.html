@@ -15,6 +15,9 @@
     <app-group-item
       *ngFor="let g of groups | async" [group]="g">
     </app-group-item>
+    <ion-item *ngIf="(this.groups | async)?.length === 0">
+      <ion-label>Create or join a group first.</ion-label>
+    </ion-item>
   </ion-list>
 </ion-content>
 

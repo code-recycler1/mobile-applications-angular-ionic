@@ -23,6 +23,9 @@
       *ngFor="let e of filteredEvents | async" [event]="e">
     </app-event-item>
 
+    <ion-item *ngIf="(this.filteredEvents | async)?.length === 0">
+      <ion-label>No events of type: {{this.selectedEventType}}</ion-label>
+    </ion-item>
   </ion-list>
 
 </ion-content>

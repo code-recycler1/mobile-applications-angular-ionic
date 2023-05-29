@@ -7,7 +7,7 @@ import {firstValueFrom, Observable, of} from 'rxjs';
 import {DatabaseService} from '../../data/services/database.service';
 import {Clipboard} from '@capacitor/clipboard';
 import {AuthService} from '../../data/services/auth.service';
-import {NewEventComponent} from './new-event/new-event.component';
+import {NewEventComponent} from '../../../shared/new-event/new-event.component';
 import {NewGroupComponent} from '../../../shared/new-group/new-group.component';
 
 @Component({
@@ -19,9 +19,9 @@ export class DetailPage implements OnInit {
 
   group!: Observable<Group>;
   groupId!: string | null;
-  groupName!: string | null;
   membersObservable: Observable<Profile[]> = of([]);
-  isGroupOwner: boolean = true;
+  isGroupOwner!: boolean;
+  isPartOfGroup!: boolean;
 
   constructor(public databaseService: DatabaseService,
               private activatedRoute: ActivatedRoute,
@@ -40,11 +40,17 @@ export class DetailPage implements OnInit {
     if (this.groupId === null) return;
 
     this.group = this.databaseService.retrieveGroup(this.groupId);
-    // if (this.group.ownerId == this.authService.getUserUID()) {
-    //   this.isGroupOwner = true;
-    //   return;
-    // }
-    // this.isGroupOwner = false;
+    const currentUserId = this.authService.getUserUID();
+
+    if (!currentUserId) return;
+
+    this.group.subscribe((group: Group) => {
+      if (group.memberIds?.includes(currentUserId)) {
+        this.isGroupOwner = group.ownerId === currentUserId;
+      } else {
+        this.isPartOfGroup = false;
+      }
+    });
   }
 
   async showEditMemberActionSheet(member: Profile): Promise<void> {
@@ -99,7 +105,7 @@ export class DetailPage implements OnInit {
   async showNewEventModal(): Promise<void> {
     const modal = await this.modalCtrl.create({
       component: NewEventComponent,
-      componentProps:{
+      componentProps: {
         groupId: this.groupId,
         groupName: await firstValueFrom(this.group).then(g => g.name),
       }

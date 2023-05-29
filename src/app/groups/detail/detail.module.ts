@@ -8,7 +8,6 @@ import { DetailPageRoutingModule } from './detail-routing.module';
 
 import { DetailPage } from './detail.page';
 import {MemberItemComponent} from './member-item/member-item.component';
-import {NewEventComponent} from './new-event/new-event.component';
 import {SharedModule} from '../../../shared/shared.module';
 
 @NgModule({
@@ -19,6 +18,6 @@ import {SharedModule} from '../../../shared/shared.module';
     DetailPageRoutingModule,
     SharedModule
   ],
-  declarations: [DetailPage, MemberItemComponent, NewEventComponent]
+  declarations: [DetailPage, MemberItemComponent]
 })
 export class DetailPageModule {}

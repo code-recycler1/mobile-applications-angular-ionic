@@ -1,18 +1,31 @@
-<ion-card [color]="this.getCardColor()" (click)="this.showChangeAttendanceActionSheet()">
+<ion-card [color]="this.getCardColor()">
   <ion-card-header>
-    <ion-card-subtitle>{{event.type}}</ion-card-subtitle>
+    <ion-card-subtitle>{{this.event?.type}}</ion-card-subtitle>
     <ion-card-title>{{ this.eventTitle }}</ion-card-title>
+    <ion-card-subtitle>{{this.event?.address}}</ion-card-subtitle>
     <ion-card-subtitle>{{this.date}} at {{this.time}}</ion-card-subtitle>
   </ion-card-header>
 
   <ion-card-content>
     <ion-icon name="checkmark-circle-outline"></ion-icon>
-    {{event.yes?.length}}
+    {{this.event?.yes?.length}}
     |
     <ion-icon name="help-circle-outline"></ion-icon>
-    {{event.maybe.length}}
+    {{this.event?.maybe?.length}}
     |
     <ion-icon name="close-circle-outline"></ion-icon>
-    {{event.no?.length}}
+    {{this.event?.no?.length}}
+    |
+    <ion-text>Responses: {{this.respondedUsers}} / {{this.event?.allUsers?.length}}</ion-text>
+    <ion-buttons>
+      <ion-button (click)="this.showChangeAttendanceActionSheet()">
+        <ion-icon name="enter-outline"></ion-icon>
+      </ion-button>
+      <!--Not implemented-->
+      <!--<ion-button (click)="this.showEditEventModal()"><ion-icon name="create-outline"></ion-icon></ion-button>-->
+      <ion-button *ngIf="isOwner" (click)="this.showDeleteEventAlert()">
+        <ion-icon name="trash"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-card-content>
 </ion-card>
