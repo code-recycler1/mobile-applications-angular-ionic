@@ -320,7 +320,7 @@ export class DatabaseService {
    */
   async joinGroup(groupCode: string): Promise<void> {
     const queryRef = this.#createQuery<Group>('groups', 'code', '==', groupCode);
-    const groupDocs = await firstValueFrom(collectionData<Group>(queryRef, { idField: 'id' }));
+    const groupDocs = await firstValueFrom(collectionData<Group>(queryRef, {idField: 'id'}));
 
     if (groupDocs && groupDocs.length > 0) {
       const groupId = groupDocs[0].id!;
@@ -332,16 +332,16 @@ export class DatabaseService {
         const updatedMemberIds = [...(groupData.memberIds || []), this.authService.getUserUID()];
 
         // Update the group memberIds
-        await updateDoc(groupDocRef, { memberIds: updatedMemberIds });
+        await updateDoc(groupDocRef, {memberIds: updatedMemberIds});
 
         // Add the user to all events associated with the group
         const eventsQueryRef = this.#createQuery<Event>('events', 'groupId', '==', groupId);
-        const eventsDocs = await firstValueFrom(collectionData<Event>(eventsQueryRef, { idField: 'id' }));
+        const eventsDocs = await firstValueFrom(collectionData<Event>(eventsQueryRef, {idField: 'id'}));
 
         const promises = eventsDocs.map((event) => {
           const eventDocRef = this.#getDocumentRef('events', event.id!);
           const updatedAllUsers = [...(event.allUsers || []), this.authService.getUserUID()];
-          return updateDoc(eventDocRef, { allUsers: updatedAllUsers });
+          return updateDoc(eventDocRef, {allUsers: updatedAllUsers});
         });
 
         await Promise.all(promises);
@@ -360,36 +360,42 @@ export class DatabaseService {
    * @returns {Promise<void>} - A promise that resolves when the operation is complete.
    * @throws {Error} - Throws an error if the group is not found.
    */
-  async leaveGroup(groupId: string): Promise<void> {
+  async leaveGroup(groupId: string, memberId?: string): Promise<void> {
     const groupDocRef = this.#getDocumentRef<Group>('groups', groupId);
 
     const groupSnapshot = await getDoc(groupDocRef);
     if (groupSnapshot.exists()) {
       const groupData = groupSnapshot.data();
-      const userId = this.authService.getUserUID();
+      if (!memberId) {
+        memberId = this.authService.getUserUID();
+      }
       const updatedMemberIds = groupData?.memberIds?.filter(
-        memberId => memberId !== userId
+        userId => userId !== memberId
       );
 
-      await updateDoc(groupDocRef, { memberIds: updatedMemberIds });
+      await updateDoc(groupDocRef, {memberIds: updatedMemberIds});
 
       // Remove the user from all events associated with the group
       const eventsQueryRef = this.#createQuery<Event>('events', 'groupId', '==', groupId);
-      const eventsDocs = await firstValueFrom(collectionData<Event>(eventsQueryRef, { idField: 'id' }));
+      const eventsDocs = await firstValueFrom(collectionData<Event>(eventsQueryRef, {idField: 'id'}));
 
       const promises = eventsDocs.map((event) => {
         const eventDocRef = this.#getDocumentRef('events', event.id!);
+
+        if (!memberId) {
+          memberId = this.authService.getUserUID();
+        }
         const updatedAllUsers = event.allUsers?.filter(
-          userId => userId !== this.authService.getUserUID()
+          userId => userId !== memberId
         );
         const updatedYes = event.yes?.filter(
-          userId => userId !== this.authService.getUserUID()
+          userId => userId !== memberId
         );
         const updatedMaybe = event.maybe?.filter(
-          userId => userId !== this.authService.getUserUID()
+          userId => userId !== memberId
         );
         const updatedNo = event.no?.filter(
-          userId => userId !== this.authService.getUserUID()
+          userId => userId !== memberId
         );
 
         return updateDoc(eventDocRef, {
@@ -406,8 +412,8 @@ export class DatabaseService {
     }
   }
 
-  async deleteMember(groupId: string, memberId: string) {
-
+  async deleteMember(groupId: string, memberId: string): Promise<void> {
+    await this.leaveGroup(groupId, memberId);
   }
 
   /**
@@ -424,7 +430,7 @@ export class DatabaseService {
 
     // Delete all events associated with the group
     const eventsQueryRef = this.#createQuery<Event>('events', 'groupId', '==', groupId);
-    const eventsDocs = await firstValueFrom(collectionData<Event>(eventsQueryRef, { idField: 'id' }));
+    const eventsDocs = await firstValueFrom(collectionData<Event>(eventsQueryRef, {idField: 'id'}));
 
     const promises = eventsDocs.map((event) => {
       const eventDocRef = this.#getDocumentRef('events', event.id!);

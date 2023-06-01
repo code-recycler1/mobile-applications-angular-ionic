@@ -36,7 +36,7 @@
         <ion-label>Members</ion-label>
       </ion-list-header>
           <app-member-item
-            *ngFor="let m of this.members | async" [member]="m" [ownerId]="g.ownerId" [groupId]="g.id"  [isGroupOwner]="this.isGroupOwner">
+            *ngFor="let m of this.members | async" [member]="m" [ownerId]="g.ownerId" [groupId]="this.groupId"  [isGroupOwner]="this.isGroupOwner">
           </app-member-item>
     </ion-list>
 

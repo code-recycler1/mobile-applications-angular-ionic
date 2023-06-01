@@ -18,7 +18,7 @@ import {NewGroupComponent} from '../../../shared/new-group/new-group.component';
 export class DetailPage implements OnInit {
 
   group!: Observable<Group>;
-  groupId!: string | null;
+  groupId?: string | null;
   members: Observable<Profile[]> = of([]);
   isGroupOwner!: boolean;
   isPartOfGroup!: boolean;
@@ -59,24 +59,8 @@ export class DetailPage implements OnInit {
     });
   }
 
-  async showEditMemberActionSheet(member: Profile): Promise<void> {
-    const actionSheet = await this.actionSheetCtrl.create({
-      header: 'Edit member',
-      buttons: [{
-        text: 'Remove from group.',
-        icon: 'trash',
-        handler: () => {
-          // this.databaseService.deleteMember(this.group.id)
-        }
-      },
-        {
-          text: 'Cancel',
-          icon: 'close',
-          role: 'cancel'
-        }
-      ]
-    });
-    await actionSheet.present();
+  ngOnDestroy(): void {
+    this.group.subscribe().unsubscribe();
   }
 
   /**
@@ -90,12 +74,6 @@ export class DetailPage implements OnInit {
       string: `${groupCode}`
     });
   }
-
-  //region Not implemented
-  private giveOwnership(userId: string): void {
-
-  }
-  //endregion
 
   /**
    * Displays a modal for creating a new event.

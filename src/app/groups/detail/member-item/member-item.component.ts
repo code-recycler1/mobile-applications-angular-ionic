@@ -17,7 +17,7 @@ export class MemberItemComponent implements OnInit {
   @Input()
   ownerId!: string;
   @Input()
-  groupId?: string;
+  groupId?: string | null;
 
   //region ctor
   constructor(private databaseService: DatabaseService, public alertController: AlertController) {
@@ -35,7 +35,7 @@ export class MemberItemComponent implements OnInit {
 
  async presentDeleteMemberAlert() : Promise<void> {
     const alert = await this.alertController.create({
-      header: `Are you sure you want to leave ${this.member.firstname} ${this.member.lastname}?`,
+      header: `Are you sure you want to delete ${this.member.firstname} ${this.member.lastname}?`,
       buttons: [
         {
           text: 'Cancel',
@@ -45,6 +45,7 @@ export class MemberItemComponent implements OnInit {
           text: 'OK',
           role: 'confirm',
           handler: async () => {
+            console.log(this.groupId, this.member.id)
             if (this.groupId){
               await this.databaseService.deleteMember(this.groupId, this.member.id);
             }
