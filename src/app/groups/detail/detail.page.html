@@ -8,7 +8,7 @@
         {{this.isPartOfGroup ? g.name : 'Membership error'}}
       </ion-title>
       <ion-buttons slot="end">
-        <ion-button (click)="this.showEditGroupModal()" *ngIf="isGroupOwner">
+        <ion-button (click)="this.showEditGroupModal()" *ngIf="this.isGroupOwner">
           <ion-icon name="create-outline"></ion-icon>
         </ion-button>
       </ion-buttons>
@@ -16,7 +16,7 @@
   </ion-header>
 
   <ion-content *ngIf="this.isPartOfGroup">
-    <ion-button (click)="this.showNewEventModal()" expand="block" *ngIf="isGroupOwner">
+    <ion-button (click)="this.showNewEventModal()" expand="block" *ngIf="this.isGroupOwner">
       New Event
       <ion-icon name="add-outline" slot="end"></ion-icon>
     </ion-button>
@@ -35,12 +35,9 @@
       <ion-list-header>
         <ion-label>Members</ion-label>
       </ion-list-header>
-      <!--    <app-member-item
-            *ngFor="let m of this.members" [member]="m" (click)="this.presentEditMemberAlert(m)">
-          </app-member-item>-->
-      <ion-item *ngFor="let m of this.g.memberIds">
-        <ion-label>{{m}}</ion-label>
-      </ion-item>
+          <app-member-item
+            *ngFor="let m of this.members | async" [member]="m" [ownerId]="g.ownerId" [groupId]="g.id"  [isGroupOwner]="this.isGroupOwner">
+          </app-member-item>
     </ion-list>
 
   </ion-content>

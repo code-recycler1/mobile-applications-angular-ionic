@@ -257,7 +257,6 @@ export class DatabaseService {
     }
   }
 
-
   //endregion
 
   //region GroupService
@@ -321,7 +320,7 @@ export class DatabaseService {
    */
   async joinGroup(groupCode: string): Promise<void> {
     const queryRef = this.#createQuery<Group>('groups', 'code', '==', groupCode);
-    const groupDocs = await firstValueFrom(collectionData<Group>(queryRef, {idField: 'id'}));
+    const groupDocs = await firstValueFrom(collectionData<Group>(queryRef, { idField: 'id' }));
 
     if (groupDocs && groupDocs.length > 0) {
       const groupId = groupDocs[0].id!;
@@ -332,14 +331,26 @@ export class DatabaseService {
         const groupData = groupSnapshot.data() as Group;
         const updatedMemberIds = [...(groupData.memberIds || []), this.authService.getUserUID()];
 
-        await updateDoc(groupDocRef, {memberIds: updatedMemberIds});
+        // Update the group memberIds
+        await updateDoc(groupDocRef, { memberIds: updatedMemberIds });
+
+        // Add the user to all events associated with the group
+        const eventsQueryRef = this.#createQuery<Event>('events', 'groupId', '==', groupId);
+        const eventsDocs = await firstValueFrom(collectionData<Event>(eventsQueryRef, { idField: 'id' }));
+
+        const promises = eventsDocs.map((event) => {
+          const eventDocRef = this.#getDocumentRef('events', event.id!);
+          const updatedAllUsers = [...(event.allUsers || []), this.authService.getUserUID()];
+          return updateDoc(eventDocRef, { allUsers: updatedAllUsers });
+        });
+
+        await Promise.all(promises);
       } else {
         throw new Error('Group not found');
       }
     } else {
       throw new Error('Group not found');
     }
-
   }
 
   /**
@@ -355,25 +366,48 @@ export class DatabaseService {
     const groupSnapshot = await getDoc(groupDocRef);
     if (groupSnapshot.exists()) {
       const groupData = groupSnapshot.data();
+      const userId = this.authService.getUserUID();
       const updatedMemberIds = groupData?.memberIds?.filter(
-        memberId => memberId !== this.authService.getUserUID()
+        memberId => memberId !== userId
       );
 
-      await updateDoc(groupDocRef, {memberIds: updatedMemberIds});
+      await updateDoc(groupDocRef, { memberIds: updatedMemberIds });
+
+      // Remove the user from all events associated with the group
+      const eventsQueryRef = this.#createQuery<Event>('events', 'groupId', '==', groupId);
+      const eventsDocs = await firstValueFrom(collectionData<Event>(eventsQueryRef, { idField: 'id' }));
+
+      const promises = eventsDocs.map((event) => {
+        const eventDocRef = this.#getDocumentRef('events', event.id!);
+        const updatedAllUsers = event.allUsers?.filter(
+          userId => userId !== this.authService.getUserUID()
+        );
+        const updatedYes = event.yes?.filter(
+          userId => userId !== this.authService.getUserUID()
+        );
+        const updatedMaybe = event.maybe?.filter(
+          userId => userId !== this.authService.getUserUID()
+        );
+        const updatedNo = event.no?.filter(
+          userId => userId !== this.authService.getUserUID()
+        );
+
+        return updateDoc(eventDocRef, {
+          allUsers: updatedAllUsers,
+          yes: updatedYes,
+          maybe: updatedMaybe,
+          no: updatedNo
+        });
+      });
+
+      await Promise.all(promises);
     } else {
       throw new Error('Group not found');
     }
   }
 
-  async deleteAllOwnedGroups(): Promise<void> {
-    const myGroups = await getDocs(query<Group>(
-      this.#getCollectionRef('groups'),
-      where('ownerId', '==', this.authService.getUserUID())
-    ));
+  async deleteMember(groupId: string, memberId: string) {
 
-    const deletePromises = myGroups.docs.map(group => deleteDoc(group.ref));
-
-    await Promise.all(deletePromises);
   }
 
   /**
@@ -383,7 +417,21 @@ export class DatabaseService {
    * @returns {Promise<void>} - A Promise that resolves when the group deletion is complete.
    */
   async deleteGroup(groupId: string): Promise<void> {
-    await deleteDoc(this.#getDocumentRef('groups', groupId));
+    const groupDocRef = this.#getDocumentRef<Group>('groups', groupId);
+
+    // Delete the group document
+    await deleteDoc(groupDocRef);
+
+    // Delete all events associated with the group
+    const eventsQueryRef = this.#createQuery<Event>('events', 'groupId', '==', groupId);
+    const eventsDocs = await firstValueFrom(collectionData<Event>(eventsQueryRef, { idField: 'id' }));
+
+    const promises = eventsDocs.map((event) => {
+      const eventDocRef = this.#getDocumentRef('events', event.id!);
+      return deleteDoc(eventDocRef);
+    });
+
+    await Promise.all(promises);
   }
 
   retrieveMyGroupsList(): Observable<Group[]> {
@@ -449,6 +497,14 @@ export class DatabaseService {
         }
       })
     );
+  }
+
+
+  retrieveProfiles(userIds: string[]): Observable<Profile[]> {
+    const queryRef = query<Profile>(this.#getCollectionRef<Profile>('profiles'),
+      where('id', 'in', userIds));
+
+    return collectionData<Profile>(queryRef);
   }
 
   /**

@@ -19,7 +19,7 @@ export class DetailPage implements OnInit {
 
   group!: Observable<Group>;
   groupId!: string | null;
-  membersObservable: Observable<Profile[]> = of([]);
+  members: Observable<Profile[]> = of([]);
   isGroupOwner!: boolean;
   isPartOfGroup!: boolean;
 
@@ -51,6 +51,11 @@ export class DetailPage implements OnInit {
       } else {
         this.isPartOfGroup = false;
       }
+      if (group.memberIds) {
+        this.databaseService.retrieveProfiles(group.memberIds).subscribe((profiles: Profile[]) => {
+          this.members = of(profiles);
+        });
+      }
     });
   }
 
@@ -81,7 +86,6 @@ export class DetailPage implements OnInit {
    * @returns {Promise<void>} A promise that resolves when the group code has been copied to the clipboard successfully.
    */
   async copyGroupCode(groupCode: string): Promise<void> {
-    console.log('Trying to copy the group code...');
     await Clipboard.write({
       string: `${groupCode}`
     });
@@ -91,11 +95,6 @@ export class DetailPage implements OnInit {
   private giveOwnership(userId: string): void {
 
   }
-
-  private deleteMember(userId: string): void {
-
-  }
-
   //endregion
 
   /**
