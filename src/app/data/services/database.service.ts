@@ -184,8 +184,11 @@ export class DatabaseService {
     );
   }
 
-  async editEvent(): Promise<void> {
-//Not implemented
+  /**
+   * Not implemented yet
+   */
+  async editEvent(eventId: string): Promise<void> {
+
   }
 
   /**
@@ -354,11 +357,12 @@ export class DatabaseService {
   }
 
   /**
-   * Leaves a group identified by the given group ID.
+   * Removes a member from a group and updates associated events.
    *
    * @param {string} groupId - The ID of the group to leave.
-   * @returns {Promise<void>} - A promise that resolves when the operation is complete.
-   * @throws {Error} - Throws an error if the group is not found.
+   * @param {string} [memberId] - The ID of the member to remove. Defaults to the current user's ID if not provided.
+   * @returns {Promise<void>} A promise that resolves when the member is successfully removed from the group and associated events.
+   * @throws {Error} If the group is not found.
    */
   async leaveGroup(groupId: string, memberId?: string): Promise<void> {
     const groupDocRef = this.#getDocumentRef<Group>('groups', groupId);
@@ -412,6 +416,13 @@ export class DatabaseService {
     }
   }
 
+  /**
+   * Deletes a member from a group.
+   *
+   * @param {string} groupId - The ID of the group from which to delete the member.
+   * @param {string} memberId - The ID of the member to delete.
+   * @returns {Promise<void>} A promise that resolves when the member is successfully deleted from the group.
+   */
   async deleteMember(groupId: string, memberId: string): Promise<void> {
     await this.leaveGroup(groupId, memberId);
   }
@@ -440,6 +451,11 @@ export class DatabaseService {
     await Promise.all(promises);
   }
 
+  /**
+   * Retrieves the list of groups that the current user is a member of.
+   *
+   * @returns {Observable<Group[]>} An observable that emits an array of groups.
+   */
   retrieveMyGroupsList(): Observable<Group[]> {
     const queryRef = this.#createQuery<Group>('groups', 'memberIds', 'array-contains', this.authService.getUserUID());
 
@@ -448,6 +464,12 @@ export class DatabaseService {
     );
   }
 
+  /**
+   * Retrieves a specific group based on the provided group ID.
+   *
+   * @param {string} groupId - The ID of the group to retrieve.
+   * @returns {Observable<Group>} An observable that emits the group object.
+   */
   retrieveGroup(groupId: string): Observable<Group> {
     return docData<Group>(this.#getDocumentRef('groups', groupId));
   }
@@ -505,7 +527,12 @@ export class DatabaseService {
     );
   }
 
-
+  /**
+   * Retrieves profiles based on the provided user IDs.
+   *
+   * @param {string[]} userIds - An array of user IDs.
+   * @returns {Observable<Profile[]>} An observable that emits an array of profiles matching the user IDs.
+   */
   retrieveProfiles(userIds: string[]): Observable<Profile[]> {
     const queryRef = query<Profile>(this.#getCollectionRef<Profile>('profiles'),
       where('id', 'in', userIds));

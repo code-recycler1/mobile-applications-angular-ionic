@@ -18,6 +18,11 @@ export class LogInComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  /**
+   * Validates the email and password and attempts to log in the user.
+   *
+   * @returns {Promise<void>} A promise that resolves when the validation is complete.
+   */
   async validate(): Promise<void> {
     if (!this.email || !this.password) {
       return;

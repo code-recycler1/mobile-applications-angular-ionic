@@ -40,9 +40,15 @@ export class GroupsPage implements OnInit {
     const modal = await this.modalCtrl.create({
       component: NewGroupComponent
     });
-    return await modal.present();
+
+    await modal.present();
   }
 
+  /**
+   * Shows an alert to enter a group code for joining a group.
+   *
+   * @returns {Promise<void>} A promise that resolves when the alert is presented.
+   */
   async showEnterGroupCodeAlert(): Promise<void> {
     const alert = await this.alertCtrl.create({
       header: `Enter code:`,

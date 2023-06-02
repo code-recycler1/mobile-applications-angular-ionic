@@ -10,30 +10,24 @@ import {AlertController} from '@ionic/angular';
 })
 export class MemberItemComponent implements OnInit {
 
-  @Input()
-  member!: Profile;
-  @Input()
-  isGroupOwner!: boolean;
-  @Input()
-  ownerId!: string;
-  @Input()
-  groupId?: string | null;
+  @Input() member!: Profile;
+  @Input() isGroupOwner!: boolean;
+  @Input() ownerId!: string;
+  @Input() groupId?: string | null;
 
-  //region ctor
-  constructor(private databaseService: DatabaseService, public alertController: AlertController) {
+  constructor(private databaseService: DatabaseService,
+              public alertController: AlertController) {
   }
 
-  //endregion
-
-  //region ng
   ngOnInit(): void {
-
   }
 
-  //endregion
-
-
- async presentDeleteMemberAlert() : Promise<void> {
+  /**
+   * Presents an alert to confirm the deletion of a member.
+   *
+   * @returns {Promise<void>} A promise that resolves when the alert is presented.
+   */
+  async presentDeleteMemberAlert(): Promise<void> {
     const alert = await this.alertController.create({
       header: `Are you sure you want to delete ${this.member.firstname} ${this.member.lastname}?`,
       buttons: [
@@ -45,8 +39,7 @@ export class MemberItemComponent implements OnInit {
           text: 'OK',
           role: 'confirm',
           handler: async () => {
-            console.log(this.groupId, this.member.id)
-            if (this.groupId){
+            if (this.groupId) {
               await this.databaseService.deleteMember(this.groupId, this.member.id);
             }
           },

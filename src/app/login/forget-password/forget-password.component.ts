@@ -17,6 +17,11 @@ export class ForgetPasswordComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  /**
+   * Validates the email and sends a password reset request.
+   *
+   * @returns {Promise<void>} A promise that resolves when the validation is complete.
+   */
   async validate(): Promise<void> {
     if (!this.email) {
       this.error = 'E-mail not found.';

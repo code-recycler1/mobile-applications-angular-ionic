@@ -12,30 +12,34 @@ import {AuthService} from '../../data/services/auth.service';
 })
 export class GroupItemComponent implements OnInit {
 
-  @Input()
-  group!: Group;
+  @Input() group!: Group;
 
   isGroupOwner!: boolean;
 
-  constructor(
-    public router: Router,
-    private alertController: AlertController,
-    private databaseService: DatabaseService,
-    private authService: AuthService) {
+  constructor(public router: Router,
+              private alertController: AlertController,
+              private databaseService: DatabaseService,
+              private authService: AuthService) {
   }
 
   ngOnInit(): void {
     this.setData();
   }
 
+  /**
+   * Sets the data for the component, including checking if the current user is the owner of the group.
+   *
+   * @returns {void}
+   */
   setData(): void {
-    if (this.group.ownerId == this.authService.getUserUID()) {
-      this.isGroupOwner = true;
-      return;
-    }
-    this.isGroupOwner = false;
+    this.isGroupOwner = this.group.ownerId == this.authService.getUserUID();
   }
 
+  /**
+   * Presents an alert to confirm the deletion of a group.
+   *
+   * @returns {Promise<void>} A promise that resolves when the alert is presented.
+   */
   async presentDeleteGroupAlert(): Promise<void> {
     const alert = await this.alertController.create({
       header: `Are you sure you want to delete ${this.group.name}?`,
@@ -60,6 +64,11 @@ export class GroupItemComponent implements OnInit {
     await alert.present();
   }
 
+  /**
+   * Presents an alert to confirm leaving the group.
+   *
+   * @returns {Promise<void>} A promise that resolves when the alert is presented.
+   */
   async presentLeaveGroupAlert(): Promise<void> {
     const alert = await this.alertController.create({
       header: `Are you sure you want to leave ${this.group.name}?`,

@@ -34,6 +34,12 @@ export class DetailPage implements OnInit {
     this.setData();
   }
 
+  /**
+   * Sets the data for the component, including retrieving the group information and checking the user's membership status.
+   * Also retrieves and sets the profiles of the group members.
+   *
+   * @returns {void}
+   */
   setData(): void {
     this.groupId = this.activatedRoute.snapshot.paramMap.get('id');
 
@@ -59,6 +65,12 @@ export class DetailPage implements OnInit {
     });
   }
 
+  /**
+   * Lifecycle hook that is called when the component is being destroyed.
+   * Unsubscribes from the group subscription to prevent memory leaks.
+   *
+   * @returns {void}
+   */
   ngOnDestroy(): void {
     this.group.subscribe().unsubscribe();
   }
@@ -91,6 +103,11 @@ export class DetailPage implements OnInit {
     return await modal.present();
   }
 
+  /**
+   * Shows a modal for editing a group.
+   *
+   * @returns {Promise<void>} A promise that resolves when the modal is presented.
+   */
   async showEditGroupModal(): Promise<void> {
     const modal = await this.modalCtrl.create({
       component: NewGroupComponent,

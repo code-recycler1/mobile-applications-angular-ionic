@@ -13,10 +13,8 @@ import {NewEventComponent} from '../../../shared/new-event/new-event.component';
 })
 export class EventItemComponent implements OnInit {
 
-  @Input()
-  event?: Event = undefined;
-  @Input()
-  eventId?: string;
+  @Input()  event?: Event = undefined;
+  @Input()  eventId?: string;
 
   eventTitle!: string;
   date!: string;
@@ -50,19 +48,29 @@ export class EventItemComponent implements OnInit {
     }
   }
 
+  /**
+   * Returns the color for the card based on the user's response to the event.
+   *
+   * @returns {string} The color for the card.
+   */
   getCardColor(): string {
     if (!this.currentUserId) return '';
     if (this.event?.maybe.includes(this.currentUserId)) {
       return 'warning';
     } else if (this.event?.yes?.includes(this.currentUserId)) {
       return 'success';
-    } else if (this.event?.no?.includes(this.currentUserId)){
+    } else if (this.event?.no?.includes(this.currentUserId)) {
       return 'danger';
-    }else{
-      return 'light'
+    } else {
+      return 'light';
     }
   }
 
+  /**
+   * Shows an action sheet to change the attendance for the event.
+   *
+   * @returns {Promise<void>} A promise that resolves when the action sheet is presented.
+   */
   async showChangeAttendanceActionSheet(): Promise<void> {
     const actionSheet = await this.actionSheetCtrl.create({
       header: `Are you attending?`,
@@ -105,7 +113,9 @@ export class EventItemComponent implements OnInit {
     await actionSheet.present();
   }
 
-  //region Not implemented
+  /**
+   * Not implemented yet...
+   */
   async showEditEventModal(): Promise<void> {
     const modal = await this.modalCtrl.create({
       component: NewEventComponent,
@@ -116,8 +126,12 @@ export class EventItemComponent implements OnInit {
     });
     return await modal.present();
   }
-  //endregion
 
+  /**
+   * Shows an alert to confirm the deletion of the event.
+   *
+   * @returns {Promise<void>} A promise that resolves when the alert is presented.
+   */
   async showDeleteEventAlert(): Promise<void> {
     const alert = await this.alertCtrl.create({
       header: 'Are you sure you want to delete this event?',

@@ -1,12 +1,12 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 
-import { IonicModule } from '@ionic/angular';
+import {IonicModule} from '@ionic/angular';
 
-import { DetailPageRoutingModule } from './detail-routing.module';
+import {DetailPageRoutingModule} from './detail-routing.module';
 
-import { DetailPage } from './detail.page';
+import {DetailPage} from './detail.page';
 import {MemberItemComponent} from './member-item/member-item.component';
 import {SharedModule} from '../../../shared/shared.module';
 
@@ -20,4 +20,5 @@ import {SharedModule} from '../../../shared/shared.module';
   ],
   declarations: [DetailPage, MemberItemComponent]
 })
-export class DetailPageModule {}
+export class DetailPageModule {
+}

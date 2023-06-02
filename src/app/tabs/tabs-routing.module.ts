@@ -9,19 +9,19 @@ const routes: Routes = [
     children: [
       {
         path: 'home',
-        loadChildren: () => import('../home/home.module').then( m => m.HomePageModule)
+        loadChildren: () => import('../home/home.module').then(m => m.HomePageModule)
       },
       {
         path: 'notifications',
-        loadChildren: () => import('../notifications/notifications.module').then( m => m.NotificationsPageModule)
+        loadChildren: () => import('../notifications/notifications.module').then(m => m.NotificationsPageModule)
       },
       {
         path: 'groups',
-        loadChildren: () => import('../groups/groups.module').then( m => m.GroupsPageModule)
+        loadChildren: () => import('../groups/groups.module').then(m => m.GroupsPageModule)
       },
       {
         path: 'me',
-        loadChildren: () => import('../me/me.module').then( m => m.MePageModule)
+        loadChildren: () => import('../me/me.module').then(m => m.MePageModule)
       },
       {
         path: '',

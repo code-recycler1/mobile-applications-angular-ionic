@@ -27,18 +27,27 @@ export class LoginPage implements OnInit {
   selectedSegment: Segment = Segment.login;
 
   @ViewChild(SwiperComponent) swiper?: SwiperComponent;
+
   constructor(public authService: AuthService, private modalController: ModalController, private ngZone: NgZone) {
   }
 
   ngOnInit(): void {
   }
 
+  /**
+   * Handles the segment changed event.
+   * Updates the active index of the swiper based on the selected segment.
+   */
   segmentChanged(): void {
     const i = this.segments.indexOf(this.selectedSegment);
     this.swiper?.swiperRef.slideTo(i, 500);
   }
 
-  onActiveIndexChange() {
+  /**
+   * Handles the change event when the active index of the swiper changes.
+   * Updates the selected segment based on the active index.
+   */
+  onActiveIndexChange(): void {
     const activeIndex = this.swiper?.swiperRef.activeIndex;
     if (activeIndex !== undefined) {
       this.ngZone.run(() => this.selectedSegment = this.segments[activeIndex]);

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {EventType} from '../data/types/eventType';
-import {Observable, of, map, switchMap, from, filter, toArray} from 'rxjs';
+import {Observable, of, map} from 'rxjs';
 import {Event} from '../data/types/event';
 import {DatabaseService} from '../data/services/database.service';
 import {AuthService} from '../data/services/auth.service';
@@ -18,7 +18,8 @@ export class HomePage implements OnInit {
   allEvents: Observable<Event[]> = of([]);
   filteredEvents: Observable<Event[]> = of([]);
 
-  constructor(public authService: AuthService, private databaseService: DatabaseService) {
+  constructor(public authService: AuthService,
+              private databaseService: DatabaseService) {
     this.authService.currentUser.subscribe(u => {
       if (u) {
         this.allEvents = this.databaseService.retrieveMyEventsList();
@@ -33,10 +34,21 @@ export class HomePage implements OnInit {
     this.filterEventsByType();
   }
 
+  /**
+   * Event handler for when the selected event type is changed.
+   * Calls the `filterEventsByType` method to filter the events based on the selected event type.
+   *
+   * @returns {void}
+   */
   onEventTypeChange(): void {
     this.filterEventsByType();
   }
 
+  /**
+   * Filters the events based on the selected event type.
+   *
+   * @returns {void}
+   */
   filterEventsByType(): void {
     if (this.selectedEventType == this.eventTypes[0]) {
       this.filteredEvents = this.allEvents;

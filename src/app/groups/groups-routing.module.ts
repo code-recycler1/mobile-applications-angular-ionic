@@ -1,7 +1,7 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {Routes, RouterModule} from '@angular/router';
 
-import { GroupsPage } from './groups.page';
+import {GroupsPage} from './groups.page';
 
 const routes: Routes = [
   {
@@ -10,7 +10,7 @@ const routes: Routes = [
   },
   {
     path: 'detail/:id',
-    loadChildren: () => import('./detail/detail.module').then( m => m.DetailPageModule)
+    loadChildren: () => import('./detail/detail.module').then(m => m.DetailPageModule)
   }
 ];
 
@@ -18,4 +18,5 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class GroupsPageRoutingModule {}
+export class GroupsPageRoutingModule {
+}
